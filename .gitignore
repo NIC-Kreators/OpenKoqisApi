@@ -8,3 +8,7 @@ riderModule.iml
 .env
 docker-compose.env
 mosquitto.db
+
+# Local configuration files and instructions
+*.local.json
+*.local.md
