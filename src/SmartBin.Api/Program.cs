@@ -39,28 +39,21 @@ builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 builder.Services.AddScoped<IAlertService, AlertService>();
 
 
-// ��������� ������� �����������
 builder.Services.AddAuthorization(options =>
 {
-    // ���������� �������� ��� ������ ������������ ����, ������� �� ����� ���������
-    // ��� ����� ����� ���������������� ����� ���������, �� ��� ������� ������� �������:
-
-    // �������� ��� Admin: ������� ���� AdminRole
+   
     options.AddPolicy("MinimumRole_Admin", policy =>
     {
         policy.RequireAuthenticatedUser();
         policy.RequireAssertion(context => context.User.ValidateToken(AdminRole.Instance));
     });
 
-    // �������� ��� SalesManager: ������� ���� SalesManagerRole
     options.AddPolicy("MinimumRole_SalesManager", policy =>
     {
         policy.RequireAuthenticatedUser();
-        // ����� ������������ ����� ���������� ValidateToken
         policy.RequireAssertion(context => context.User.ValidateToken(SalesManagerRole.Instance));
     });
 
-    // �������� ��� Guest: ������� ���� GuestRole
     options.AddPolicy("MinimumRole_Guest", policy =>
     {
         policy.RequireAuthenticatedUser();

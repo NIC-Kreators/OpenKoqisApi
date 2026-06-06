@@ -6,7 +6,7 @@ using System.Collections.Concurrent;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.Extensions.Logging; // Добавили
+using Microsoft.Extensions.Logging; 
 
 namespace SmartBin.Infrastructure.Services
 {
@@ -15,7 +15,7 @@ namespace SmartBin.Infrastructure.Services
         private static readonly ConcurrentDictionary<string, string> _refreshTokens = new();
         private readonly IConfiguration _configuration;
         private readonly byte[] _secretKeyBytes;
-        private readonly ILogger<JwtService> _logger; // Поле для логгера
+        private readonly ILogger<JwtService> _logger; 
 
         public JwtService(IConfiguration configuration, ILogger<JwtService> logger)
         {

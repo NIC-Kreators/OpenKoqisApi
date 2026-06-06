@@ -1,20 +1,20 @@
 ﻿namespace SmartBin.Domain.Models
 {
-    // Базовый record для всех ролей. Обязательно abstract.
+    // Base record for all roles. Must be abstract.
     public abstract record UserRole
     {
-        // Уникальный строковый идентификатор, который будет использоваться в JWT Claims.
+        // Unique string identifier to be used in JWT Claims.
         public abstract string Name { get; }
 
-        // Список прав, которыми обладает данная роль.
-        // Это можно использовать для более сложной авторизации, кроме иерархии.
+        // List of permissions associated with this role.
+        // Can be used for complex authorization beyond simple hierarchy.
         public virtual List<string> Permissions => new List<string>();
 
-        // Метод для сравнения ролей (аналог скриншота "сравнение").
-        // Проверяет, обладает ли текущая роль правами, как минимум, сравниваемой роли.
+        // Method to compare roles (equivalent to the "comparison" logic).
+        // Checks if the current role possesses at least the permissions of the other role.
         public abstract bool HasPermissionsOf(UserRole otherRole);
 
-        // Статический метод для парсинга строки из Claims обратно в объект Record.
+        // Static method to parse a string from Claims back into a Record object.
         public static UserRole Parse(string roleName)
         {
             return roleName switch
@@ -27,14 +27,14 @@
         }
     }
 
-    // --- Конкретные Роли (Singletons для сравнения) ---
+    // --- Concrete Roles (Singletons for comparison) ---
 
     public record AdminRole : UserRole
     {
         public static readonly AdminRole Instance = new();
         public override string Name => "Admin";
 
-        // Admin обладает правами всех остальных ролей
+        // Admin possesses the permissions of all other roles.
         public override bool HasPermissionsOf(UserRole otherRole) => true;
     }
 
@@ -43,11 +43,11 @@
         public static readonly SalesManagerRole Instance = new();
         public override string Name => "SalesManager";
 
-        // SalesManager обладает правами Guest
+        // SalesManager possesses Guest permissions.
         public override bool HasPermissionsOf(UserRole otherRole)
         {
             if (otherRole is AdminRole) return false;
-            return true; // Обладает правами всех, кроме Admin
+            return true; // Possesses permissions of everyone except Admin.
         }
     }
 
@@ -56,7 +56,7 @@
         public static readonly GuestRole Instance = new();
         public override string Name => "Guest";
 
-        // Guest обладает правами только самого себя
+        // Guest possesses only its own permissions.
         public override bool HasPermissionsOf(UserRole otherRole)
         {
             return otherRole is GuestRole;

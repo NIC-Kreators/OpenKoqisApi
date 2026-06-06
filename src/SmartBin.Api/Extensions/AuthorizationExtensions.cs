@@ -8,51 +8,45 @@ namespace SmartBin.Api.Extensions
     public static class AuthorizationExtensions
     {
         /// <summary>
-        /// Проверяет, обладает ли текущий аутентифицированный пользователь (ClaimsPrincipal) 
-        /// правами, необходимыми для требуемой роли.
+        /// Checks whether the current authenticated user (ClaimsPrincipal) 
+        /// possesses the permissions required for the specified role.
         /// </summary>
-        /// <param name="principal">Объект текущего пользователя, извлеченный из JWT токена.</param>
-        /// <param name="requiredRole">Минимальная роль, необходимая для доступа (напр., AdminRole.Instance).</param>
-        /// <returns>True, если пользователь обладает требуемыми правами.</returns>
+        /// <param name="principal">The current user object extracted from the JWT token.</param>
+        /// <param name="requiredRole">The minimum role required for access (e.g., AdminRole.Instance).</param>
+        /// <returns>True if the user possesses the required permissions.</returns>
         public static bool ValidateToken(this ClaimsPrincipal principal, UserRole requiredRole)
         {
-            // 1. Проверяем, аутентифицирован ли пользователь.
+            // 1. Checking if user is authenthicated.
             if (principal == null || !principal.Identity?.IsAuthenticated == true)
             {
                 return false;
             }
 
-            // 2. Находим Claim с типом Role. 
-            // ClaimTypes.Role — это стандартный ключ, который мы использовали в JwtService.
+            // 2. Find  Claim with type Role. 
             var roleClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
 
             if (roleClaim == null)
             {
-                // Токен действителен, но не содержит информацию о роли (должен содержать).
-                // Считаем, что прав нет.
                 return false;
             }
 
-            // 3. Парсинг строкового значения (например, "Admin" или "SalesManager") обратно в объект record UserRole.
+            // 3. Parsing string type back to record UserRole object.
             UserRole userRole;
             try
             {
-                // Используем статический метод Parse, определенный в SmartBin.Domain/UserRole.cs
                 userRole = UserRole.Parse(roleClaim.Value);
             }
             catch (ArgumentException)
             {
-                // Токен содержит неизвестную роль.
+                // Token carries invalid role.
                 return false;
             }
             catch (Exception)
             {
-                // Общая ошибка при парсинге
                 return false;
             }
 
-            // 4. Выполнение проверки иерархии прав.
-            // Используем логику, инкапсулированную в record (например, AdminRole.HasPermissionsOf(SalesManagerRole))
+            // 4. Executing the rights hierarchy check.
             return userRole.HasPermissionsOf(requiredRole);
         }
     }

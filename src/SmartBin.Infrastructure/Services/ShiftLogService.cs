@@ -2,7 +2,7 @@ using MongoDB.Bson;
 using SmartBin.Application.GenericRepository;
 using SmartBin.Domain.Models;
 using SmartBin.Application.Services;
-using Microsoft.Extensions.Logging; // Не забудь добавить
+using Microsoft.Extensions.Logging; 
 
 namespace SmartBin.Infrastructure.Services;
 
@@ -11,13 +11,13 @@ public class ShiftLogService : IShiftLogService
     private readonly IRepository<ShiftLog> _repo;
     private readonly IRepository<User> _userRepo;
     private readonly IRepository<Bin> _binRepo;
-    private readonly ILogger<ShiftLogService> _logger; // Добавили логгер
+    private readonly ILogger<ShiftLogService> _logger; 
 
     public ShiftLogService(
         IRepository<ShiftLog> repo,
         IRepository<User> userRepo,
         IRepository<Bin> binRepo,
-        ILogger<ShiftLogService> logger) // Внедряем через DI
+        ILogger<ShiftLogService> logger) 
     {
         _repo = repo;
         _userRepo = userRepo;

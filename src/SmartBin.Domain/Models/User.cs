@@ -6,7 +6,7 @@ namespace SmartBin.Domain.Models
     public class User : IEntity
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)] // Магия здесь!
+        [BsonRepresentation(BsonType.ObjectId)] 
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
         public UserRole Role { get; set; } = GuestRole.Instance;
         public required string Nickname { get; init; }

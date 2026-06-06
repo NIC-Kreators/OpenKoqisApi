@@ -30,7 +30,7 @@ namespace SmartBin.Application.GenericRepository
                 }
                 else
                 {
-                    // Если атрибут не указан, возвращаем стандартное имя коллекции на основе имени типа TDocument
+                    // If attribute isn't set , return default collection name based on name like TDocument
                     return typeof(TDocument).Name;
                 }
             }

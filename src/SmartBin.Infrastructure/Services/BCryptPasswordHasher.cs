@@ -1,5 +1,5 @@
 ﻿using SmartBin.Application.Services;
-using Microsoft.Extensions.Logging; // Добавляем этот namespace
+using Microsoft.Extensions.Logging; 
 using BCrypt.Net;
 
 namespace SmartBin.Infrastructure.Services
@@ -8,14 +8,12 @@ namespace SmartBin.Infrastructure.Services
     {
         private readonly ILogger<BCryptPasswordHasher> _logger;
 
-        // Внедряем логгер через конструктор
         public BCryptPasswordHasher(ILogger<BCryptPasswordHasher> logger)
         {
             _logger = logger;
             _logger.LogDebug("BCryptPasswordHasher initialized.");
         }
 
-        // Хеширование пароля
         public string HashPassword(string password)
         {
             _logger.LogInformation("Starting password hashing process...");
@@ -34,7 +32,6 @@ namespace SmartBin.Infrastructure.Services
             }
         }
 
-        // Верификация пароля
         public bool VerifyPassword(string providedPassword, string hashedPassword)
         {
             _logger.LogInformation("Starting password verification...");

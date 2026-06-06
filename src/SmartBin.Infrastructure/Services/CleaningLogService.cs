@@ -1,5 +1,5 @@
 using MongoDB.Bson;
-using Microsoft.Extensions.Logging; // Не забудь добавить этот using
+using Microsoft.Extensions.Logging; 
 using SmartBin.Application.GenericRepository;
 using SmartBin.Application.Services;
 using SmartBin.Domain.Models;
@@ -10,8 +10,7 @@ public class CleaningLogService : ICleaningLogService
 {
     private readonly IRepository<CleaningLog> _repo;
     private readonly IRepository<Bin> _binRepo;
-    private readonly ILogger<CleaningLogService> _logger; // Добавляем логгер
-
+    private readonly ILogger<CleaningLogService> _logger; 
     public CleaningLogService(
         IRepository<CleaningLog> repo,
         IRepository<Bin> binRepo,
@@ -75,7 +74,6 @@ public class CleaningLogService : ICleaningLogService
     {
         _logger.LogInformation("Starting LogCleaning process for Bin: {BinId} by User: {UserId}", binId, userId);
 
-        // Валидация бина
         var bin = await _binRepo.FindById(binId);
         if (bin == null)
         {
@@ -98,7 +96,6 @@ public class CleaningLogService : ICleaningLogService
         _logger.LogDebug("Inserting cleaning log into database...");
         _repo.InsertOne(cleaning);
 
-        // Обновление статуса бина
         _logger.LogInformation("Updating Bin {Id} status to Active after cleaning.", binId);
         bin.Status = BinStatus.Active;
         bin.UpdatedAt = DateTime.UtcNow;

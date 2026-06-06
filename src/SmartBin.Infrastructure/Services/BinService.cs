@@ -1,7 +1,7 @@
 using SmartBin.Application.GenericRepository;
 using SmartBin.Domain.Models;
 using SmartBin.Application.Services;
-using Microsoft.Extensions.Logging; // Не забудь добавить этот using
+using Microsoft.Extensions.Logging; 
 
 namespace SmartBin.Infrastructure.Services;
 

@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using SmartBin.Domain.Models; // Должна быть ссылка на Domain
+using SmartBin.Domain.Models; 
 using System;
 
 namespace SmartBin.Api.Attributes
 {
-    // Наследуемся от базового атрибута AuthorizeAttribute
+    // inherit from the base attribute AuthorizeAttribute
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
     public class AuthorizeRoleAttribute : AuthorizeAttribute
     {
-        // 💡 Константа для имени политики
+        // Constant for policy name
         private const string PolicyPrefix = "MinimumRole_";
 
-        // 💡 Свойство для хранения требуемой роли
+        // Proprety for storing the required role
         public UserRole RequiredRole { get; }
 
         public AuthorizeRoleAttribute(Type roleType)
@@ -20,11 +20,8 @@ namespace SmartBin.Api.Attributes
             {
                 throw new ArgumentException($"Тип {roleType.Name} должен наследоваться от SmartBin.Domain.Models.UserRole.");
             }
-
-            // Мы не можем сохранить сам экземпляр Role, но можем сохранить его Name, 
-            // который будет использоваться в политике.
-
-            // Получаем статическое поле Instance для доступа к имени роли (например, "Admin")
+            
+            // Getting static field Instance to access the role name (for example, "Admin")
             var roleInstance = roleType.GetField("Instance")?.GetValue(null) as UserRole;
 
             if (roleInstance == null)
@@ -34,8 +31,7 @@ namespace SmartBin.Api.Attributes
 
             this.RequiredRole = roleInstance;
 
-            // Ключевой шаг: Установка имени политики
-            // Например: Policy = "MinimumRole_Admin"
+            // Setting policy name
             this.Policy = $"{PolicyPrefix}{roleInstance.Name}";
         }
     }
