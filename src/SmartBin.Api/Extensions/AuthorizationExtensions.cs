@@ -1,4 +1,7 @@
 ﻿using System.Security.Claims;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using SmartBin.Domain.Models; // Для доступа к UserRole, AdminRole и т.д.
 using System;
 using System.Linq;
@@ -54,6 +57,32 @@ namespace SmartBin.Api.Extensions
             // 4. Выполнение проверки иерархии прав.
             // Используем логику, инкапсулированную в record (например, AdminRole.HasPermissionsOf(SalesManagerRole))
             return userRole.HasPermissionsOf(requiredRole);
+        }
+        
+        public static IServiceCollection AddAuthorizationSecPolicies(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddAuthorization(options =>
+            {
+
+                options.AddPolicy("MinimumRole_Admin", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireAssertion(context => context.User.ValidateToken(AdminRole.Instance));
+                });
+
+                options.AddPolicy("MinimumRole_SalesManager", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireAssertion(context => context.User.ValidateToken(SalesManagerRole.Instance));
+                });
+
+                options.AddPolicy("MinimumRole_Guest", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireAssertion(context => context.User.ValidateToken(GuestRole.Instance));
+                });
+            });
+            return services;
         }
     }
 }
