@@ -2,20 +2,20 @@
 
 public record UserRegistrationDto
 {
-    // Используется как логин/уникальный идентификатор
+    // Using as login/unique identifier
     public required string Nickname { get; set; }
 
-    // Пароль в открытом виде для хеширования
+    // Passsword that has to hashed
     public required string Password { get; set; }
 
-    // Используется для поля FullName в модели User
+    // used for FullName in model User
     public required string FullName { get; set; }
 }
 public record UserLoginDto
 {
-    // Используется для поиска пользователя в БД (соответствует полю Nickname в User)
+    //  Used for user search
     public required string Nickname { get; set; }
 
-    // Пароль, введенный пользователем (будет хешироваться и сравниваться с PasswordHash)
+    // User entered passsword
     public required string Password { get; set; }
 }

@@ -6,7 +6,7 @@ namespace SmartBin.Domain.Models
     public interface IEntity
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)] // Позволяет работать со строками как с ObjectId
+        [BsonRepresentation(BsonType.ObjectId)] 
         string Id { get; set; }
         DateTime CreatedAt { get; set; }
         DateTime UpdatedAt { get; set; }

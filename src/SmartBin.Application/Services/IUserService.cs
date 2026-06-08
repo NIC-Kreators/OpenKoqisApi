@@ -10,10 +10,10 @@ namespace SmartBin.Application.Services
         Task UpdateAsync(string id, User user);
         Task DeleteAsync(string id);
 
-        // Регистрация нового пользователя
+        // New user registry
         Task<TokenPair> RegisterAsync(UserRegistrationDto registrationDto);
 
-        // Вход пользователя
+        // User login
         Task<TokenPair> LoginAsync(string email, string password);
     }
 }

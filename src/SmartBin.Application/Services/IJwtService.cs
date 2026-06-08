@@ -5,16 +5,15 @@ using System.Text;
 
 namespace SmartBin.Application.Services
 {
-    // В SmartBin.Application/Abstractions/Security/
     public interface IJwtService
     {
-        // Возвращает пару: обычный токен и рефреш-токен
+        // Normal and refresh token
         Task<TokenPair> GenerateTokenPairAsync(string userId, string userName, UserRole role);
 
-        // Валидирует рефреш-токен
+        // Validating refresh token
         Task<bool> IsRefreshTokenValidAsync(string userId, string refreshToken);
 
-        // Удаляет рефреш-токен после использования (или при выходе)
+        // Deleteting refresh token
         Task RemoveRefreshTokenAsync(string userId, string refreshToken);
     }
 

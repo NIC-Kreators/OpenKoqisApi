@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging; // Не забудь добавить
+﻿using Microsoft.Extensions.Logging; 
 using SmartBin.Application.GenericRepository;
 using SmartBin.Application.Services;
 using SmartBin.Domain.Models;
@@ -13,7 +13,7 @@ namespace SmartBin.Infrastructure.Services
         private readonly IRepository<User> _repository;
         private readonly IJwtService _jwtService;
         private readonly IPasswordHasher _passwordHasher;
-        private readonly ILogger<UserService> _logger; // Добавляем логгер
+        private readonly ILogger<UserService> _logger; 
 
         public UserService(
             IRepository<User> repository,

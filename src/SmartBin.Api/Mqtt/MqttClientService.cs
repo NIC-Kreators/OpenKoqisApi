@@ -47,13 +47,11 @@ public class MqttClientService : BackgroundService
         //};
         _client.ApplicationMessageReceivedAsync += async e =>
         {
-            var topic = e.ApplicationMessage.Topic; // �������� "bins/123/telemetry"
+            var topic = e.ApplicationMessage.Topic; 
             var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
 
-            // 1. ��������� ID (������ ������� �� ������ ������� ������)
             var binId = topic.Split('/')[1];
 
-            // 2. ������������� payload
             var telemetry = JsonSerializer.Deserialize<BinTelemetry>(payload);
             
             if (telemetry is null)

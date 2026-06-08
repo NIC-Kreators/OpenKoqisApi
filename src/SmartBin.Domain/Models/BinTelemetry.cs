@@ -4,7 +4,7 @@
     {
         public int FillLevel { get; set; } // %
         public bool IsSmokeDetected { get; set; }
-        public bool IsOverloaded { get; set; } // через край
+        public bool IsOverloaded { get; set; } // when overflowed
         public DateTime LastUpdated { get; set; }
     }
 }

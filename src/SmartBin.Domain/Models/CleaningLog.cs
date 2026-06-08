@@ -6,7 +6,7 @@ namespace SmartBin.Domain.Models
     public class CleaningLog : IEntity
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)] // Магия здесь!
+        [BsonRepresentation(BsonType.ObjectId)] 
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
         public ObjectId BinId { get; set; }
         public ObjectId UserId { get; set; }

@@ -5,35 +5,36 @@ namespace SmartBin.Domain.Models
 {
     public enum AlertSeverity
     {
-        Info,      // Информация
-        Warning,   // Предупреждение (например, заполнено на 80%)
-        Critical   // Критично (дым, перегруз или 100% заполнение)
+        Info,      
+        Warning,   
+        Critical   
     }
 
     public enum AlertType
     {
-        Smoke,        // Задымление
-        Overload,     // Перегруз
-        Fullness,     // Переполнение
-        ConnectionLost // Потеря связи с датчиком
+        Smoke,          
+        Overload,       
+        Fullness,       
+        ConnectionLost  
     }
 
     public class Alert : IEntity
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)] // Магия здесь!
+        [BsonRepresentation(BsonType.ObjectId)] 
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
-        public string BinId { get; set; } = null!; // ID контейнера, где произошла аномалия
+        public string BinId { get; set; } = null!; 
 
         public AlertType Type { get; set; }
 
         public AlertSeverity Severity { get; set; }
 
-        public string Message { get; set; } = null!; // Описание (напр. "Обнаружен дым!")
+        public string Message { get; set; } = null!; // Message description
 
-        public string? ValueAtTime { get; set; } // Значение датчика в момент аномалии
+        public string? ValueAtTime { get; set; } // Detector value when anomaly occured
+        
 
-        public bool IsResolved { get; set; } = false; // Решена ли проблема
+        public bool IsResolved { get; set; } = false; 
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; }

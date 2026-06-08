@@ -32,7 +32,7 @@ namespace SmartBin.Domain.Models
     public class Bin : IEntity
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)] // Магия здесь!
+        [BsonRepresentation(BsonType.ObjectId)] 
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
         public BinType Type { get; set; }
         public GeoPoint Location { get; set; }

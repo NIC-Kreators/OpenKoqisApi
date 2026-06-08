@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging; // Не забудь добавить этот using
+﻿using Microsoft.Extensions.Logging; 
 using SmartBin.Application.GenericRepository;
 using SmartBin.Application.Services;
 using SmartBin.Domain.Models;
@@ -13,7 +13,7 @@ namespace SmartBin.Infrastructure.Services
     public class AlertService : IAlertService
     {
         private readonly IRepository<Alert> _repository;
-        private readonly ILogger<AlertService> _logger; // Добавляем логгер
+        private readonly ILogger<AlertService> _logger; 
 
         public AlertService(IRepository<Alert> repository, ILogger<AlertService> logger)
         {

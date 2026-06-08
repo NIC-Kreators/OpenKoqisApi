@@ -11,7 +11,7 @@ namespace SmartBin.Api.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
-    private readonly ILogger<UsersController> _logger; // Добавляем логгер
+    private readonly ILogger<UsersController> _logger; 
 
     public UsersController(IUserService userService, ILogger<UsersController> logger)
     {

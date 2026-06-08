@@ -10,8 +10,8 @@ namespace SmartBin.Api.Controllers;
 public class BinsController : ControllerBase
 {
     private readonly IBinService _binService;
-    private readonly IAlertService _alertService; // Добавили сервис алертов
-    private readonly ILogger<BinsController> _logger; // Добавили логгер
+    private readonly IAlertService _alertService; 
+    private readonly ILogger<BinsController> _logger; 
 
     public BinsController(IBinService binService, IAlertService alertService, ILogger<BinsController> logger)
     {
@@ -79,7 +79,7 @@ public class BinsController : ControllerBase
             await _binService.UpdateTelemetryAsync(id, telemetry);
             await _binService.UpdateTelemetryHistoryAsync(id, telemetry);
 
-            // Обработка аномалий с логированием
+        
             if (telemetry.IsSmokeDetected)
             {
                 _logger.LogCritical("SMOKE DETECTED in Bin: {BinId}!", id);
@@ -88,7 +88,7 @@ public class BinsController : ControllerBase
                     BinId = id,
                     Type = AlertType.Smoke,
                     Severity = AlertSeverity.Critical,
-                    Message = "Внимание! Обнаружено задымление в контейнере."
+                    Message = "Danger! Smoke detected in the bin."
                 });
             }
 
@@ -100,7 +100,7 @@ public class BinsController : ControllerBase
                     BinId = id,
                     Type = AlertType.Fullness,
                     Severity = telemetry.FillLevel >= 100 ? AlertSeverity.Critical : AlertSeverity.Warning,
-                    Message = $"Контейнер заполнен на {telemetry.FillLevel}%"
+                    Message = $"Container fill level at {telemetry.FillLevel}%"
                 });
             }
 
