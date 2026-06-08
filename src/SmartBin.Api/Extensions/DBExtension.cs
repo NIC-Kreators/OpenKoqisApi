@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using SmartBin.Application.GenericRepository;
 using SmartBin.Infrastructure.Services;
 using SmartBin.Api.Services;
+
 namespace SmartBin.Api.Extensions;
 
 public static class DBExtension

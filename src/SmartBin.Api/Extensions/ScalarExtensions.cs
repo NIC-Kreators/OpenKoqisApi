@@ -1,6 +1,7 @@
 ﻿using Scalar.AspNetCore;
 
 namespace SmartBin.Api.Extensions;
+
 public static class ScalarExtensions
 {
     public static WebApplication AddScalar(this WebApplication app)

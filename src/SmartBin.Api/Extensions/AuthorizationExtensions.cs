@@ -85,6 +85,4 @@ namespace SmartBin.Api.Extensions
             return services;
         }
     }
-    
-   
 }
