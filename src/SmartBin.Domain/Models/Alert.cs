@@ -5,17 +5,17 @@ namespace SmartBin.Domain.Models
 {
     public enum AlertSeverity
     {
-        Info,      // Information
-        Warning,   // Warning (e.g., 80% full)
-        Critical   // Critical (smoke, overload, or 100% full)
+        Info,      
+        Warning,   
+        Critical   
     }
 
     public enum AlertType
     {
-        Smoke,          // Smoke
-        Overload,       // Overload
-        Fullness,       // Overflow
-        ConnectionLost  // Disconnected
+        Smoke,          
+        Overload,       
+        Fullness,       
+        ConnectionLost  
     }
 
     public class Alert : IEntity
@@ -23,7 +23,7 @@ namespace SmartBin.Domain.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)] 
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
-        public string BinId { get; set; } = null!; // contained ID where anomaly occured
+        public string BinId { get; set; } = null!; 
 
         public AlertType Type { get; set; }
 
@@ -34,7 +34,7 @@ namespace SmartBin.Domain.Models
         public string? ValueAtTime { get; set; } // Detector value when anomaly occured
         
 
-        public bool IsResolved { get; set; } = false; // Is problem fixed.
+        public bool IsResolved { get; set; } = false; 
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; }

@@ -88,7 +88,7 @@ public class BinsController : ControllerBase
                     BinId = id,
                     Type = AlertType.Smoke,
                     Severity = AlertSeverity.Critical,
-                    Message = "��������! ���������� ���������� � ����������."
+                    Message = "Danger! Smoke detected in the bin."
                 });
             }
 
@@ -100,7 +100,7 @@ public class BinsController : ControllerBase
                     BinId = id,
                     Type = AlertType.Fullness,
                     Severity = telemetry.FillLevel >= 100 ? AlertSeverity.Critical : AlertSeverity.Warning,
-                    Message = $"��������� �������� �� {telemetry.FillLevel}%"
+                    Message = $"Container fill level at {telemetry.FillLevel}%"
                 });
             }
 
