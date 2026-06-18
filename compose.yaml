@@ -1,9 +1,9 @@
-﻿name: 'smart-bin'
+﻿name: 'open-koqis'
 
 services:
-  smartbin.api:
-    image: smartbin.api
-    container_name: smartbin.api
+  open-koqis.api:
+    image: open-koqis.api
+    container_name: open-koqis.api
     ports:
       - "8080:8080" # HTTP
     build:
@@ -13,20 +13,20 @@ services:
         ENVIRONMENT: "Development"
         PORT: 8080
     depends_on:
-      - smartbin.mongo
-      - smartbin.mosquitto
-      - smartbin.otel-collector
+      - open-koqis.mongo
+      - open-koqis.mosquitto
+      - open-koqis.otel-collector
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
     restart: no
     volumes:
       # Hot reload for development
-      - ./src/SmartBin.Api/appsettings.Development.json:/app/appsettings.Development.json:ro
-      - ./src/SmartBin.Api/.env:/app/.env:ro
+      - ./src/OpenKoqis.Api/appsettings.Development.json:/app/appsettings.Development.json:ro
+      - ./src/OpenKoqis.Api/.env:/app/.env:ro
 
-  smartbin.mongo:
+  open-koqis.mongo:
     image: mongo:8.2
-    container_name: smartbin.mongo
+    container_name: open-koqis.mongo
     ports:
       - "27017:27017"
     environment:
@@ -36,9 +36,9 @@ services:
       - mongodb_data:/data/db
     restart: unless-stopped
   
-  smartbin.mosquitto:
+  open-koqis.mosquitto:
     image: eclipse-mosquitto:2.0
-    container_name: smartbin.mosquitto-broker
+    container_name: open-koqis.mosquitto
     ports:
       - "1883:1883"
     volumes:
@@ -47,9 +47,9 @@ services:
       - ./config/mosquitto/data:/mosquitto/data
     restart: unless-stopped
     
-  smartbin.otel-collector:
+  open-koqis.otel-collector:
     image: otel/opentelemetry-collector:0.140.0
-    container_name: smartbin.otel-collector
+    container_name: open-koqis.otel-collector
     command: [ "--config=/etc/otel-collector-config.yml" ]
     environment:
       SEQ_API_KEY: $SEQ_API_KEY
@@ -61,12 +61,12 @@ services:
       - "4318:4318" # HTTP
       - "13133:13133" # Health checks
     depends_on:
-      - smartbin.seq
+      - open-koqis.seq
     restart: unless-stopped
 
-  smartbin.grafana:
+  open-koqis.grafana:
     image: grafana/grafana:12.1
-    container_name: smartbin.grafana
+    container_name: open-koqis.grafana
     environment:
       GF_SECURITY_ADMIN_USER: $GRAFANA_USERNAME
       GF_SECURITY_ADMIN_PASSWORD: $GRAFANA_PASSWORD
@@ -76,9 +76,9 @@ services:
       - grafana_data:/var/lib/grafana
     restart: unless-stopped
 
-  smartbin.prometheus:
+  open-koqis.prometheus:
     image: prom/prometheus:v3.7.3
-    container_name: smartbin.prometheus
+    container_name: open-koqis.prometheus
     volumes:
       - ./config/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
       - prometheus_data:/prometheus
@@ -86,12 +86,12 @@ services:
       - "9090:9090"
     command: [ "--config.file=/etc/prometheus/prometheus.yaml", "--storage.tsdb.retention.time=45d", "--storage.tsdb.retention.size=15GB" ]
     depends_on:
-      - smartbin.otel-collector
+      - open-koqis.otel-collector
     restart: unless-stopped
     
-  smartbin.seq:
+  open-koqis.seq:
     image: datalust/seq:2025.2
-    container_name: smartbin.seq
+    container_name: open-koqis.seq
     environment:
       ACCEPT_EULA: "Y"
       SEQ_FIRSTRUN_ADMINPASSWORD: $SEQ_FIRSTRUN_ADMINPASSWORD
@@ -102,7 +102,7 @@ services:
     restart: unless-stopped
     
 networks:
-  smartbin_network:
+  open-koqis_network:
     external: true
     
 volumes:
