@@ -1,6 +1,5 @@
-using MongoDB.Bson;
-using Microsoft.Extensions.Logging; 
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 using OpenKoqis.Application.GenericRepository;
 using OpenKoqis.Application.Services;
 using OpenKoqis.Domain.Models;
@@ -12,13 +11,13 @@ public class ShiftLogService : IShiftLogService
     private readonly IRepository<ShiftLog> _repo;
     private readonly IRepository<User> _userRepo;
     private readonly IRepository<Bin> _binRepo;
-    private readonly ILogger<ShiftLogService> _logger; 
+    private readonly ILogger<ShiftLogService> _logger;
 
     public ShiftLogService(
         IRepository<ShiftLog> repo,
         IRepository<User> userRepo,
         IRepository<Bin> binRepo,
-        ILogger<ShiftLogService> logger) 
+        ILogger<ShiftLogService> logger)
     {
         _repo = repo;
         _userRepo = userRepo;

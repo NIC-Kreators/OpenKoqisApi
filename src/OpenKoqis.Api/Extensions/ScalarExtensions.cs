@@ -1,4 +1,4 @@
-﻿using Scalar.AspNetCore;
+using Scalar.AspNetCore;
 
 namespace OpenKoqis.Api.Extensions;
 

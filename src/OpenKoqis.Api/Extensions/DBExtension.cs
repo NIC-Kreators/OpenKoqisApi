@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OpenKoqis.Api.Services;
 using OpenKoqis.Application.GenericRepository;
 using OpenKoqis.Infrastructure.Services;
-using OpenKoqis.Api.Services;
 
 namespace OpenKoqis.Api.Extensions;
 

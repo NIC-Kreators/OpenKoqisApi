@@ -10,8 +10,8 @@ namespace OpenKoqis.Api.Controllers;
 public class BinsController : ControllerBase
 {
     private readonly IBinService _binService;
-    private readonly IAlertService _alertService; 
-    private readonly ILogger<BinsController> _logger; 
+    private readonly IAlertService _alertService;
+    private readonly ILogger<BinsController> _logger;
 
     public BinsController(IBinService binService, IAlertService alertService, ILogger<BinsController> logger)
     {
@@ -79,7 +79,7 @@ public class BinsController : ControllerBase
             await _binService.UpdateTelemetryAsync(id, telemetry);
             await _binService.UpdateTelemetryHistoryAsync(id, telemetry);
 
-        
+
             if (telemetry.IsSmokeDetected)
             {
                 _logger.LogCritical("SMOKE DETECTED in Bin: {BinId}!", id);

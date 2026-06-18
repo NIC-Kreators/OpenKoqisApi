@@ -1,4 +1,4 @@
-﻿namespace OpenKoqis.Domain.Models
+namespace OpenKoqis.Domain.Models
 {
     // Base record for all roles. Must be abstract.
     public abstract record UserRole
@@ -46,7 +46,8 @@
         // SalesManager possesses Guest permissions.
         public override bool HasPermissionsOf(UserRole otherRole)
         {
-            if (otherRole is AdminRole) return false;
+            if (otherRole is AdminRole)
+                return false;
             return true; // Possesses permissions of everyone except Admin.
         }
     }

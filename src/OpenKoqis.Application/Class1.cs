@@ -1,4 +1,4 @@
-﻿namespace OpenKoqis.Application;
+namespace OpenKoqis.Application;
 
 public class Class1
 {

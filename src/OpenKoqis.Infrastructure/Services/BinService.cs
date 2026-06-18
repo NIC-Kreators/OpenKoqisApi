@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Logging; 
+using Microsoft.Extensions.Logging;
 using OpenKoqis.Application.GenericRepository;
 using OpenKoqis.Application.Services;
 using OpenKoqis.Domain.Models;

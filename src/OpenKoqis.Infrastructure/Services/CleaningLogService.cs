@@ -1,6 +1,5 @@
-using MongoDB.Bson;
-using Microsoft.Extensions.Logging; 
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 using OpenKoqis.Application.GenericRepository;
 using OpenKoqis.Application.Services;
 using OpenKoqis.Domain.Models;
@@ -11,7 +10,7 @@ public class CleaningLogService : ICleaningLogService
 {
     private readonly IRepository<CleaningLog> _repo;
     private readonly IRepository<Bin> _binRepo;
-    private readonly ILogger<CleaningLogService> _logger; 
+    private readonly ILogger<CleaningLogService> _logger;
     public CleaningLogService(
         IRepository<CleaningLog> repo,
         IRepository<Bin> binRepo,

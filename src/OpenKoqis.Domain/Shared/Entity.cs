@@ -8,7 +8,7 @@ public abstract class Entity<TId>(TId id) : IEquatable<Entity<TId>> where TId : 
     {
         if (other is null)
             return false;
-        
+
         return ReferenceEquals(this, other) || other.Id.Equals(Id);
     }
 
@@ -18,7 +18,7 @@ public abstract class Entity<TId>(TId id) : IEquatable<Entity<TId>> where TId : 
             return false;
         if (ReferenceEquals(this, obj))
             return true;
-        
+
         return obj.GetType() == GetType() && Equals((Entity<TId>)obj);
     }
 

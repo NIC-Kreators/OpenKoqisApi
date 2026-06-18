@@ -1,4 +1,4 @@
-﻿using OpenKoqis.Domain.Models;
+using OpenKoqis.Domain.Models;
 using OpenKoqis.Domain.Models.Dto;
 
 namespace OpenKoqis.Application.Services

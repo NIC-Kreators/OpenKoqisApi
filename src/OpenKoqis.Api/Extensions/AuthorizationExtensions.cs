@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using OpenKoqis.Domain.Models;
 
 namespace OpenKoqis.Api.Extensions
@@ -47,7 +47,7 @@ namespace OpenKoqis.Api.Extensions
             // 4. Executing the rights hierarchy check.
             return userRole.HasPermissionsOf(requiredRole);
         }
-        
+
         public static IServiceCollection AddAuthorizationSecPolicies(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAuthorization(options =>

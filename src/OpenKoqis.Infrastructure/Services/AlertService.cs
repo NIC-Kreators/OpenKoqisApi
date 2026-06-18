@@ -2,14 +2,13 @@ using Microsoft.Extensions.Logging;
 using OpenKoqis.Application.GenericRepository;
 using OpenKoqis.Application.Services;
 using OpenKoqis.Domain.Models;
-using Microsoft.Extensions.Logging; 
 
 namespace OpenKoqis.Infrastructure.Services
 {
     public class AlertService : IAlertService
     {
         private readonly IRepository<Alert> _repository;
-        private readonly ILogger<AlertService> _logger; 
+        private readonly ILogger<AlertService> _logger;
 
         public AlertService(IRepository<Alert> repository, ILogger<AlertService> logger)
         {

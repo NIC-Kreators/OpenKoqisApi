@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace OpenKoqis.Domain.Models
@@ -6,7 +6,7 @@ namespace OpenKoqis.Domain.Models
     public class ShiftLog : IEntity
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)] 
+        [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
         public ObjectId UserId { get; set; }
         public DateTime StartedAt { get; set; }

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using OpenKoqis.Application.Services;
 using OpenKoqis.Domain.Models;
 

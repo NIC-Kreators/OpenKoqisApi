@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using OpenKoqis.Domain.Models;
 
 namespace OpenKoqis.Api.Attributes;

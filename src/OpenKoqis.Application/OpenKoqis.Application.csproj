@@ -5,6 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <NuGetAuditMode>direct</NuGetAuditMode>
     </PropertyGroup>
 
@@ -15,4 +16,5 @@
     <ItemGroup>
       <ProjectReference Include="..\OpenKoqis.Domain\OpenKoqis.Domain.csproj" />
     </ItemGroup>
+
 </Project>

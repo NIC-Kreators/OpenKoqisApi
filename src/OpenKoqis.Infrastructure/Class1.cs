@@ -1,4 +1,4 @@
-﻿namespace OpenKoqis.Infrastructure;
+namespace OpenKoqis.Infrastructure;
 
 public class Class1
 {

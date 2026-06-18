@@ -1,4 +1,4 @@
-﻿namespace OpenKoqis.Application.GenericRepository
+namespace OpenKoqis.Application.GenericRepository
 {
     public class MongoSettings : IMongoSettings
     {

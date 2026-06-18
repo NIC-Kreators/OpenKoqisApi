@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Mvc;
 using System.Security.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using OpenKoqis.Application.Services;
 using OpenKoqis.Domain.Models;
 using OpenKoqis.Domain.Models.Dto;
@@ -11,7 +11,7 @@ namespace OpenKoqis.Api.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
-    private readonly ILogger<UsersController> _logger; 
+    private readonly ILogger<UsersController> _logger;
 
     public UsersController(IUserService userService, ILogger<UsersController> logger)
     {

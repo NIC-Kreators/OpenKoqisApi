@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace OpenKoqis.Domain.Models
@@ -12,7 +12,7 @@ namespace OpenKoqis.Domain.Models
 
         public GeoPoint(double[] coordinates)
         {
-            if(coordinates.Length != 2)
+            if (coordinates.Length != 2)
                 throw new ArgumentException("Coordinates must contain exactly two elements: [longitude, latitude].");
 
             Coordinates = coordinates;
@@ -32,7 +32,7 @@ namespace OpenKoqis.Domain.Models
     public class Bin : IEntity
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)] 
+        [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
         public BinType Type { get; set; }
         public GeoPoint Location { get; set; }

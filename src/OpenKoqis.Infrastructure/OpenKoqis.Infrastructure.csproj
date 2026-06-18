@@ -5,17 +5,18 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <NuGetAuditMode>direct</NuGetAuditMode>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
-      <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.7" />
-      <PackageReference Include="MongoDB.Driver" Version="3.8.0" />
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
-		<ProjectReference Include="..\OpenKoqis.Domain\OpenKoqis.Domain.csproj" />
-		<ProjectReference Include="..\OpenKoqis.Application\OpenKoqis.Application.csproj" />
+        <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.7" />
+        <PackageReference Include="MongoDB.Driver" Version="3.8.0" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
+		    <ProjectReference Include="..\OpenKoqis.Domain\OpenKoqis.Domain.csproj" />
+		    <ProjectReference Include="..\OpenKoqis.Application\OpenKoqis.Application.csproj" />
+	  </ItemGroup>
 
-	</ItemGroup>
 </Project>

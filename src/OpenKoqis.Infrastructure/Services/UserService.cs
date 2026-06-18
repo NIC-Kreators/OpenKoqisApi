@@ -1,6 +1,6 @@
-using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 using System.Security.Authentication;
+using Microsoft.Extensions.Logging;
 using OpenKoqis.Application.GenericRepository;
 using OpenKoqis.Application.Services;
 using OpenKoqis.Domain.Models;
@@ -13,7 +13,7 @@ namespace OpenKoqis.Infrastructure.Services
         private readonly IRepository<User> _repository;
         private readonly IJwtService _jwtService;
         private readonly IPasswordHasher _passwordHasher;
-        private readonly ILogger<UserService> _logger; 
+        private readonly ILogger<UserService> _logger;
 
         public UserService(
             IRepository<User> repository,

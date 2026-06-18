@@ -1,7 +1,5 @@
 using DotNetEnv.Configuration;
 using Microsoft.Extensions.Options;
-using Scalar.AspNetCore;
-using Serilog;
 using OpenKoqis.Api.Extensions;
 using OpenKoqis.Api.Mqtt;
 using OpenKoqis.Api.Services;
@@ -9,6 +7,8 @@ using OpenKoqis.Application.GenericRepository;
 using OpenKoqis.Application.Services;
 using OpenKoqis.Domain.Models;
 using OpenKoqis.Infrastructure.Services;
+using Scalar.AspNetCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 

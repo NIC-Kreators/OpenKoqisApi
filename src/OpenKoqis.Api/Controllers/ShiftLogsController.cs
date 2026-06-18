@@ -9,7 +9,7 @@ namespace OpenKoqis.Api.Controllers;
 public class ShiftLogsController : ControllerBase
 {
     private readonly IShiftLogService _shiftLogService;
-    private readonly ILogger<ShiftLogsController> _logger; 
+    private readonly ILogger<ShiftLogsController> _logger;
 
     public ShiftLogsController(IShiftLogService shiftLogService, ILogger<ShiftLogsController> logger)
     {
