@@ -1,6 +1,4 @@
-using SmartBin.Application.Services;
 using Microsoft.Extensions.Logging; 
-using BCrypt.Net;
 using OpenKoqis.Application.Services;
 
 namespace OpenKoqis.Infrastructure.Services

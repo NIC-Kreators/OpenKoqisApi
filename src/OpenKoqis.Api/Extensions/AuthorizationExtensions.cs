@@ -1,10 +1,4 @@
 ﻿using System.Security.Claims;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using SmartBin.Domain.Models; // Для доступа к UserRole, AdminRole и т.д.
-using System;
-using System.Linq;
 using OpenKoqis.Domain.Models;
 
 namespace OpenKoqis.Api.Extensions
