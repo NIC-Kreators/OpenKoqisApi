@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using SmartBin.Domain.Models; 
+using OpenKoqis.Domain.Models; 
 using System;
 
-namespace SmartBin.Api.Attributes
+namespace OpenKoqis.Api.Attributes
 {
     // inherit from the base attribute AuthorizeAttribute
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]

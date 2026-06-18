@@ -1,6 +1,0 @@
-@SmartBin.Api_HostAddress = http://localhost:5185
-
-GET {{SmartBin.Api_HostAddress}}/hello/
-Accept: application/json
-
-###
