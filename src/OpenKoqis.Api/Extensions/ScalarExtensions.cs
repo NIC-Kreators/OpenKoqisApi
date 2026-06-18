@@ -12,7 +12,7 @@ public static class ScalarExtensions
             app.MapScalarApiReference("/docs", options =>
             {
                 options
-                    .WithTitle("SmartBin API")
+                    .WithTitle("OpenKoqis API")
                     .WithTheme(ScalarTheme.DeepSpace)
                     .ShowOperationId()
                     .WithDefaultHttpClient(ScalarTarget.Node, ScalarClient.Undici)
