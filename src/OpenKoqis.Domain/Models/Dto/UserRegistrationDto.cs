@@ -1,4 +1,4 @@
-namespace OpenKoqis.Domain.Models.Dto;
+﻿namespace OpenKoqis.Domain.Models.Dto;
 
 public record UserRegistrationDto
 {
@@ -11,6 +11,7 @@ public record UserRegistrationDto
     // used for FullName in model User
     public required string FullName { get; set; }
 }
+
 public record UserLoginDto
 {
     //  Used for user search

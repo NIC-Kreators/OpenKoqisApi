@@ -1,14 +1,13 @@
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace OpenKoqis.Domain.Models
+namespace OpenKoqis.Domain.Models;
+
+public interface IEntity
 {
-    public interface IEntity
-    {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        string Id { get; set; }
-        DateTime CreatedAt { get; set; }
-        DateTime UpdatedAt { get; set; }
-    }
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    string Id { get; set; }
+    DateTime CreatedAt { get; set; }
+    DateTime UpdatedAt { get; set; }
 }

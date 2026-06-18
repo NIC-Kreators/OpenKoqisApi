@@ -1,21 +1,20 @@
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using OpenKoqis.Domain.Models;
 
-namespace OpenKoqis.Api.Services
+namespace OpenKoqis.Api.Services;
+
+public class MongoDbService
 {
-    public class MongoDbService
+    public IMongoCollection<User> Users { get; }
+    public IMongoCollection<Bin> Bins { get; }
+
+    public MongoDbService(IConfiguration config)
     {
-        public IMongoCollection<User> Users { get; }
-        public IMongoCollection<Bin> Bins { get; }
+        var mongo = config.GetSection("MongoDB");
+        var client = new MongoClient(config.GetValue<string>("MONGO_CONNECTION_STRING"));
+        var db = client.GetDatabase(mongo["DatabaseName"]);
 
-        public MongoDbService(IConfiguration config)
-        {
-            var mongo = config.GetSection("MongoDB");
-            var client = new MongoClient(config.GetValue<string>("MONGO_CONNECTION_STRING"));
-            var db = client.GetDatabase(mongo["DatabaseName"]);
-
-            Users = db.GetCollection<User>(mongo["UsersCollection"]);
-            Bins = db.GetCollection<Bin>(mongo["BinsCollection"]);
-        }
+        Users = db.GetCollection<User>(mongo["UsersCollection"]);
+        Bins = db.GetCollection<Bin>(mongo["BinsCollection"]);
     }
 }

@@ -1,60 +1,51 @@
 using Microsoft.Extensions.Logging;
 using OpenKoqis.Application.Services;
 
-namespace OpenKoqis.Infrastructure.Services
+namespace OpenKoqis.Infrastructure.Services;
+
+public class BCryptPasswordHasher(ILogger<BCryptPasswordHasher> logger) : IPasswordHasher
 {
-    public class BCryptPasswordHasher : IPasswordHasher
+    public string HashPassword(string password)
     {
-        private readonly ILogger<BCryptPasswordHasher> _logger;
+        logger.LogInformation("Starting password hashing process...");
 
-        public BCryptPasswordHasher(ILogger<BCryptPasswordHasher> logger)
+        try
         {
-            _logger = logger;
-            _logger.LogDebug("BCryptPasswordHasher initialized.");
+            var hash = BCrypt.Net.BCrypt.HashPassword(password, 10);
+
+            logger.LogInformation("Password successfully hashed");
+            return hash;
         }
-
-        public string HashPassword(string password)
+        catch (Exception ex)
         {
-            _logger.LogInformation("Starting password hashing process...");
-
-            try
-            {
-                var hash = BCrypt.Net.BCrypt.HashPassword(password, 10);
-
-                _logger.LogInformation("Password successfully hashed.");
-                return hash;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while hashing password.");
-                throw;
-            }
+            logger.LogError(ex, "Error occurred while hashing password");
+            throw;
         }
+    }
 
-        public bool VerifyPassword(string providedPassword, string hashedPassword)
+    public bool VerifyPassword(string providedPassword, string hashedPassword)
+    {
+        logger.LogInformation("Starting password verification...");
+
+        try
         {
-            _logger.LogInformation("Starting password verification...");
+            var isValid = BCrypt.Net.BCrypt.Verify(providedPassword, hashedPassword);
 
-            try
+            if (isValid)
             {
-                bool isValid = BCrypt.Net.BCrypt.Verify(providedPassword, hashedPassword);
-
-                if (isValid)
-                {
-                    _logger.LogInformation("Password verification successful. Access granted.");
-                }
-                else
-                {
-                    _logger.LogWarning("Password verification failed. Invalid credentials provided.");
-                }
-
-                return isValid;
+                logger.LogInformation("Password verification successful. Access granted");
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError(ex, "Error occurred during password verification.");
-                return false;
+                logger.LogWarning("Password verification failed. Invalid credentials provided");
             }
+
+            return isValid;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred during password verification");
+            return false;
         }
     }
 }

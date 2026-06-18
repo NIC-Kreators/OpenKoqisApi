@@ -3,33 +3,29 @@ using OpenKoqis.Domain.Models;
 
 namespace OpenKoqis.Api.Attributes;
 
-// Наследуемся от базового атрибута AuthorizeAttribute
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
 public class AuthorizeRoleAttribute : AuthorizeAttribute
 {
-    // 💡 Константа для имени политики
     private const string PolicyPrefix = "MinimumRole_";
-
-    // 💡 Свойство для хранения требуемой роли
     public UserRole RequiredRole { get; }
 
     public AuthorizeRoleAttribute(Type roleType)
     {
         if (!typeof(UserRole).IsAssignableFrom(roleType))
         {
-            throw new ArgumentException($"Тип {roleType.Name} должен наследоваться от OpenKoqis.Domain.Models.UserRole.");
+            throw new ArgumentException($"Type {roleType.Name} must inherit from OpenKoqis.Domain.Models.UserRole.");
         }
 
-        // Мы не можем сохранить сам экземпляр Role, но можем сохранить его Name, 
-        // который будет использоваться в политике.
+        // We cannot save the Role instance itself, but we can save its Name,
+        // which will be used in the policy.
 
-        // Получаем статическое поле Instance для доступа к имени роли (например, "Admin")
+        // Get the static field Instance to access the role name (e.g., "Admin")
         var roleInstance = roleType.GetField("Instance")?.GetValue(null) as UserRole;
 
-        RequiredRole = roleInstance ?? throw new InvalidOperationException($"Тип {roleType.Name} должен содержать статическое поле 'Instance'.");
+        RequiredRole = roleInstance ?? throw new InvalidOperationException($"Type {roleType.Name} must contain a static field 'Instance'.");
 
-        // Ключевой шаг: Установка имени политики
-        // Например: Policy = "MinimumRole_Admin"
+        // Key step: Setting the policy name
+        // For example: Policy = "MinimumRole_Admin"
         Policy = $"{PolicyPrefix}{roleInstance.Name}";
     }
 }

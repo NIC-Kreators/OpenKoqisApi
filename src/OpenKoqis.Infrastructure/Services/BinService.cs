@@ -5,59 +5,51 @@ using OpenKoqis.Domain.Models;
 
 namespace OpenKoqis.Infrastructure.Services;
 
-public class BinService : IBinService
+public class BinService(IRepository<Bin> repository, ILogger<BinService> logger) : IBinService
 {
-    private readonly IRepository<Bin> _repository;
-    private readonly ILogger<BinService> _logger;
-
-    public BinService(IRepository<Bin> repository, ILogger<BinService> logger)
-    {
-        _repository = repository;
-        _logger = logger;
-    }
-
     public async Task<List<Bin>> GetAllAsync()
     {
-        _logger.LogInformation("Fetching all bins from database.");
-        var bins = await _repository.GetAllAsync();
-        _logger.LogInformation("Successfully retrieved {Count} bins.", bins.Count);
+        logger.LogInformation("Fetching all bins from database");
+        var bins = await repository.GetAllAsync();
+        logger.LogInformation("Successfully retrieved {Count} bins", bins.Count);
         return bins;
     }
 
     public async Task<Bin?> GetByIdAsync(string id)
     {
-        _logger.LogInformation("Searching for bin with ID: {BinId}", id);
-        var bin = await _repository.FindById(id);
+        logger.LogInformation("Searching for bin with ID: {BinId}", id);
+        var bin = await repository.FindById(id);
 
         if (bin == null)
-            _logger.LogWarning("Bin with ID: {BinId} was not found.", id);
+            logger.LogWarning("Bin with ID: {BinId} was not found", id);
         else
-            _logger.LogInformation("Bin {BinId} found.", id);
+            logger.LogInformation("Bin {BinId} found", id);
 
         return bin;
     }
 
     public async Task<Bin> CreateAsync(Bin bin)
     {
-        _logger.LogInformation("Creating a new bin of type {BinType}.", bin.Type);
+        logger.LogInformation("Creating a new bin of type {BinType}", bin.Type);
 
         bin.CreatedAt = DateTime.UtcNow;
         bin.UpdatedAt = bin.CreatedAt;
 
-        _repository.InsertOne(bin);
-        _logger.LogInformation("Bin created successfully with ID: {BinId}", bin.Id);
+        repository.InsertOne(bin);
+        logger.LogInformation("Bin created successfully with ID: {BinId}", bin.Id);
 
-        return await Task.FromResult(bin);
+        return bin;
     }
 
     public async Task UpdateAsync(string id, Bin bin)
     {
-        _logger.LogInformation("Attempting to update bin {BinId}.", id);
+        logger.LogInformation("Attempting to update bin {BinId}", id);
 
-        var existing = await _repository.FindById(id);
+        var existing = await repository.FindById(id);
+
         if (existing == null)
         {
-            _logger.LogError("Update failed. Bin '{BinId}' not found.", id);
+            logger.LogError("Update failed. Bin '{BinId}' not found", id);
             throw new KeyNotFoundException($"Bin '{id}' not found.");
         }
 
@@ -65,35 +57,35 @@ public class BinService : IBinService
         bin.CreatedAt = existing.CreatedAt;
         bin.UpdatedAt = DateTime.UtcNow;
 
-        _repository.ReplaceOne(bin);
-        _logger.LogInformation("Bin {BinId} updated successfully.", id);
-        await Task.CompletedTask;
+        repository.ReplaceOne(bin);
+        logger.LogInformation("Bin {BinId} updated successfully", id);
     }
 
     public async Task DeleteAsync(string id)
     {
-        _logger.LogInformation("Attempting to delete bin {BinId}.", id);
+        logger.LogInformation("Attempting to delete bin {BinId}", id);
 
-        var existing = await _repository.FindById(id);
+        var existing = await repository.FindById(id);
+
         if (existing == null)
         {
-            _logger.LogError("Delete failed. Bin '{BinId}' not found.", id);
+            logger.LogError("Delete failed. Bin '{BinId}' not found", id);
             throw new KeyNotFoundException($"Bin '{id}' not found.");
         }
 
-        _repository.DeleteById(id);
-        _logger.LogInformation("Bin {BinId} deleted from database.", id);
-        await Task.CompletedTask;
+        repository.DeleteById(id);
+        logger.LogInformation("Bin {BinId} deleted from database", id);
     }
 
     public async Task UpdateTelemetryAsync(string binId, BinTelemetry telemetry)
     {
-        _logger.LogInformation("Updating current telemetry for bin {BinId}.", binId);
+        logger.LogInformation("Updating current telemetry for bin {BinId}", binId);
 
-        var existing = await _repository.FindById(binId);
+        var existing = await repository.FindById(binId);
+
         if (existing == null)
         {
-            _logger.LogError("Telemetry update failed. Bin '{BinId}' not found.", binId);
+            logger.LogError("Telemetry update failed. Bin '{BinId}' not found", binId);
             throw new KeyNotFoundException($"Bin '{binId}' not found.");
         }
 
@@ -101,32 +93,31 @@ public class BinService : IBinService
         existing.Telemetry = telemetry;
         existing.UpdatedAt = DateTime.UtcNow;
 
-        _repository.ReplaceOne(existing);
-        _logger.LogInformation("Current telemetry for bin {BinId} updated. Fill level: {FillLevel}%", binId, telemetry.FillLevel);
-        await Task.CompletedTask;
+        repository.ReplaceOne(existing);
+        logger.LogInformation("Current telemetry for bin {BinId} updated. Fill level: {FillLevel}%", binId, telemetry.FillLevel);
     }
 
     public async Task UpdateTelemetryHistoryAsync(string binId, BinTelemetry telemetry)
     {
-        _logger.LogInformation("Adding new entry to telemetry history for bin {BinId}.", binId);
+        logger.LogInformation("Adding new entry to telemetry history for bin {BinId}", binId);
 
-        var existing = await _repository.FindById(binId);
+        var existing = await repository.FindById(binId);
+
         if (existing == null)
         {
-            _logger.LogError("History update failed. Bin '{BinId}' not found.", binId);
+            logger.LogError("History update failed. Bin '{BinId}' not found", binId);
             throw new KeyNotFoundException($"Bin '{binId}' not found.");
         }
 
         telemetry.LastUpdated = telemetry.LastUpdated == default ? DateTime.UtcNow : telemetry.LastUpdated;
 
-        var historyList = existing.TelemetryHistory?.ToList() ?? new List<BinTelemetry>();
+        var historyList = existing.TelemetryHistory?.ToList() ?? [];
         historyList.Add(telemetry);
 
-        existing.TelemetryHistory = historyList.ToArray();
+        existing.TelemetryHistory = [..historyList];
         existing.UpdatedAt = DateTime.UtcNow;
 
-        _repository.ReplaceOne(existing);
-        _logger.LogInformation("History for bin {BinId} updated. Total records: {Count}", binId, existing.TelemetryHistory.Length);
-        await Task.CompletedTask;
+        repository.ReplaceOne(existing);
+        logger.LogInformation("History for bin {BinId} updated. Total records: {Count}", binId, existing.TelemetryHistory.Length);
     }
 }

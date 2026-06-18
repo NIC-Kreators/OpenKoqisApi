@@ -12,6 +12,7 @@ public class MqttClientService : BackgroundService
     private readonly IMqttClient _client;
     private readonly MqttClientOptions _options;
     private readonly MqttClientSubscribeOptions _subscribeOptions;
+
     public MqttClientService(IConfiguration config, ILogger<MqttClientService> logger, IBinService binService)
     {
         _logger = logger;
@@ -25,6 +26,7 @@ public class MqttClientService : BackgroundService
         _logger.LogDebug("Options for MQTT server is defined");
 
         var isMqttAllowedAnonymous = config.GetValue<bool>("MQTT_ALLOW_ANONYMOUS");
+
         if (!isMqttAllowedAnonymous)
         {
             _logger.LogInformation("MQTT is not allowed anonymous connection. Configure username and password");
@@ -93,6 +95,6 @@ public class MqttClientService : BackgroundService
 
         _logger.LogInformation("Disconnected from MQTT server");
         // ReSharper disable once MethodSupportsCancellation
-        await _client.DisconnectAsync();
+        await _client.DisconnectAsync(cancellationToken: ct);
     }
 }

@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace OpenKoqis.Application.Services;
 
-namespace OpenKoqis.Application.Services
+public interface IPasswordHasher
 {
-    public interface IPasswordHasher
-    {
-        string HashPassword(string password);
+    string HashPassword(string password);
 
-        bool VerifyPassword(string providedPassword, string hashedPassword);
-    }
+    bool VerifyPassword(string providedPassword, string hashedPassword);
 }

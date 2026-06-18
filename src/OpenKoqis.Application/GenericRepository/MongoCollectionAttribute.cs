@@ -1,12 +1,6 @@
-namespace OpenKoqis.Application.GenericRepository
-{
-    public class MongoCollectionAttribute : Attribute
-    {
-        public string CollectionName { get; set; }
+﻿namespace OpenKoqis.Application.GenericRepository;
 
-        public MongoCollectionAttribute(string collectionName)
-        {
-            CollectionName = collectionName;
-        }
-    }
+public class MongoCollectionAttribute(string collectionName) : Attribute
+{
+    public string CollectionName { get; set; } = collectionName;
 }

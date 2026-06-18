@@ -6,54 +6,43 @@ using OpenKoqis.Domain.Models;
 
 namespace OpenKoqis.Infrastructure.Services;
 
-public class ShiftLogService : IShiftLogService
+public class ShiftLogService(
+    IRepository<ShiftLog> repo,
+    IRepository<User> userRepo,
+    IRepository<Bin> binRepo,
+    ILogger<ShiftLogService> logger)
+    : IShiftLogService
 {
-    private readonly IRepository<ShiftLog> _repo;
-    private readonly IRepository<User> _userRepo;
-    private readonly IRepository<Bin> _binRepo;
-    private readonly ILogger<ShiftLogService> _logger;
-
-    public ShiftLogService(
-        IRepository<ShiftLog> repo,
-        IRepository<User> userRepo,
-        IRepository<Bin> binRepo,
-        ILogger<ShiftLogService> logger)
-    {
-        _repo = repo;
-        _userRepo = userRepo;
-        _binRepo = binRepo;
-        _logger = logger;
-    }
-
     public async Task<List<ShiftLog>> GetAllAsync()
     {
-        _logger.LogInformation("Fetching all shift logs from database.");
-        var logs = await _repo.GetAllAsync();
-        _logger.LogInformation("Successfully retrieved {Count} shift logs.", logs.Count);
+        logger.LogInformation("Fetching all shift logs from database");
+        var logs = await repo.GetAllAsync();
+        logger.LogInformation("Successfully retrieved {Count} shift logs", logs.Count);
         return logs;
     }
 
     public async Task<ShiftLog?> GetByIdAsync(string id)
     {
-        _logger.LogInformation("Searching for shift log with ID: {Id}", id);
-        var log = await _repo.FindById(id);
+        logger.LogInformation("Searching for shift log with ID: {Id}", id);
+        var log = await repo.FindById(id);
 
         if (log == null)
-            _logger.LogWarning("Shift log with ID: {Id} was not found.", id);
+            logger.LogWarning("Shift log with ID: {Id} was not found", id);
         else
-            _logger.LogInformation("Shift log with ID: {Id} found.", id);
+            logger.LogInformation("Shift log with ID: {Id} found", id);
 
         return log;
     }
 
     public async Task<ShiftLog> StartShiftAsync(string userId)
     {
-        _logger.LogInformation("Attempting to start a new shift for User: {UserId}", userId);
+        logger.LogInformation("Attempting to start a new shift for User: {UserId}", userId);
 
-        var user = await _userRepo.FindById(userId);
+        var user = await userRepo.FindById(userId);
+
         if (user == null)
         {
-            _logger.LogError("StartShift failed: User with ID {UserId} does not exist.", userId);
+            logger.LogError("StartShift failed: User with ID {UserId} does not exist", userId);
             throw new KeyNotFoundException($"User '{userId}' not found.");
         }
 
@@ -62,36 +51,38 @@ public class ShiftLogService : IShiftLogService
             UserId = ObjectId.Parse(userId),
             StartedAt = DateTime.UtcNow,
             EndedAt = DateTime.MinValue,
-            CleanedBins = new List<ObjectId>(),
+            CleanedBins = [],
             DistanceTravelledKm = 0,
             Route = string.Empty,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
 
-        _repo.InsertOne(shift);
-        _logger.LogInformation("New shift started and saved. ShiftId: {ShiftId} for User: {UserId}", shift.Id, userId);
+        repo.InsertOne(shift);
+        logger.LogInformation("New shift started and saved. ShiftId: {ShiftId} for User: {UserId}", shift.Id, userId);
 
-        return await Task.FromResult(shift);
+        return shift;
     }
 
     public async Task EndShiftAsync(string shiftId, DateTime endedAt, IEnumerable<string> cleanedBinIds, double distanceKm, string? route = null)
     {
-        _logger.LogInformation("Attempting to end shift: {ShiftId}", shiftId);
+        logger.LogInformation("Attempting to end shift: {ShiftId}", shiftId);
 
-        var shift = await _repo.FindById(shiftId);
+        var shift = await repo.FindById(shiftId);
+
         if (shift == null)
         {
-            _logger.LogError("EndShift failed: Shift with ID {ShiftId} not found.", shiftId);
+            logger.LogError("EndShift failed: Shift with ID {ShiftId} not found", shiftId);
             throw new KeyNotFoundException($"Shift '{shiftId}' not found.");
         }
 
-        var cleanedObjectIds = new List<ObjectId>();
-        int foundBinsCount = 0;
+        List<ObjectId> cleanedObjectIds = [];
+        var foundBinsCount = 0;
 
-        foreach (var binId in cleanedBinIds ?? Enumerable.Empty<string>())
+        foreach (var binId in cleanedBinIds)
         {
-            var bin = await _binRepo.FindById(binId);
+            var bin = await binRepo.FindById(binId);
+
             if (bin != null)
             {
                 cleanedObjectIds.Add(ObjectId.Parse(binId));
@@ -99,7 +90,7 @@ public class ShiftLogService : IShiftLogService
             }
             else
             {
-                _logger.LogWarning("Bin with ID {BinId} skipped: not found in database.", binId);
+                logger.LogWarning("Bin with ID {BinId} skipped: not found in database", binId);
             }
         }
 
@@ -109,27 +100,24 @@ public class ShiftLogService : IShiftLogService
         shift.Route = route ?? shift.Route;
         shift.UpdatedAt = DateTime.UtcNow;
 
-        _repo.ReplaceOne(shift);
-        _logger.LogInformation("Shift {ShiftId} ended successfully. Bins cleaned: {Count}. Distance: {Distance} km",
-            shiftId, foundBinsCount, distanceKm);
-
-        await Task.CompletedTask;
+        repo.ReplaceOne(shift);
+        logger.LogInformation("Shift {ShiftId} ended successfully. Bins cleaned: {Count}. Distance: {Distance} km",
+                              shiftId, foundBinsCount, distanceKm);
     }
 
     public async Task DeleteAsync(string id)
     {
-        _logger.LogInformation("Request to delete shift log: {Id}", id);
+        logger.LogInformation("Request to delete shift log: {Id}", id);
 
-        var existing = await _repo.FindById(id);
+        var existing = await repo.FindById(id);
+
         if (existing == null)
         {
-            _logger.LogError("Delete failed: ShiftLog {Id} not found.", id);
+            logger.LogError("Delete failed: ShiftLog {Id} not found", id);
             throw new KeyNotFoundException($"ShiftLog '{id}' not found.");
         }
 
-        _repo.DeleteById(id);
-        _logger.LogInformation("Shift log {Id} deleted successfully.", id);
-
-        await Task.CompletedTask;
+        repo.DeleteById(id);
+        logger.LogInformation("Shift log {Id} deleted successfully", id);
     }
 }

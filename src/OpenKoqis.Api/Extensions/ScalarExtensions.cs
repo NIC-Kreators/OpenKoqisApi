@@ -23,6 +23,7 @@ public static class ScalarExtensions
                     });
             });
         }
+
         return app;
     }
 }

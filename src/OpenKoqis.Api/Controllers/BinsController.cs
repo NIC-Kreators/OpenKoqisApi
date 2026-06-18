@@ -7,83 +7,81 @@ namespace OpenKoqis.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class BinsController : ControllerBase
+public class BinsController(
+    IBinService binService,
+    IAlertService alertService,
+    ILogger<BinsController> logger) : ControllerBase
 {
-    private readonly IBinService _binService;
-    private readonly IAlertService _alertService;
-    private readonly ILogger<BinsController> _logger;
-
-    public BinsController(IBinService binService, IAlertService alertService, ILogger<BinsController> logger)
-    {
-        _binService = binService;
-        _alertService = alertService;
-        _logger = logger;
-    }
-
     [HttpGet]
-    public async Task<ActionResult<List<Bin>>> Get([FromQuery] BinStatus? status = null, [FromQuery] int? minFillLevel = null)
+    public async Task<ActionResult<List<Bin>>> GetAsync([FromQuery] BinStatus? status = null, [FromQuery] int? minFillLevel = null)
     {
-        _logger.LogInformation("Fetching bins with filters: Status={Status}, MinFill={MinFill}", status, minFillLevel);
+        logger.LogInformation("Fetching bins with filters: Status={Status}, MinFill={MinFill}", status, minFillLevel);
 
-        var bins = await _binService.GetAllAsync();
+        var bins = await binService.GetAllAsync();
 
         if (status.HasValue)
             bins = bins.Where(b => b.Status == status.Value).ToList();
 
         if (minFillLevel.HasValue)
-            bins = bins.Where(b => b.Telemetry != null && b.Telemetry.FillLevel >= minFillLevel.Value).ToList();
+            bins = bins.Where(b => b.Telemetry.FillLevel >= minFillLevel.Value).ToList();
 
-        _logger.LogDebug("Successfully retrieved {Count} bins after filtering", bins.Count);
+        logger.LogDebug("Successfully retrieved {Count} bins after filtering", bins.Count);
         return Ok(bins);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Bin>> Get(string id)
+    public async Task<ActionResult<Bin>> GetByIdAsync(string id)
     {
-        _logger.LogInformation("Getting bin details for ID: {BinId}", id);
-        var bin = await _binService.GetByIdAsync(id);
+        logger.LogInformation("Getting bin details for ID: {BinId}", id);
+        var bin = await binService.GetByIdAsync(id);
 
         if (bin == null)
         {
-            _logger.LogWarning("Bin with ID: {BinId} not found", id);
+            logger.LogWarning("Bin with ID: {BinId} not found", id);
             return NotFound();
         }
+
         return Ok(bin);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Bin>> Post([FromBody] Bin bin)
+    public async Task<ActionResult<Bin>> PostAsync([FromBody] Bin bin)
     {
-        _logger.LogInformation("Creating a new bin of type {Type}", bin.Type);
+        logger.LogInformation("Creating a new bin of type {Type}", bin.Type);
+
         try
         {
-            var created = await _binService.CreateAsync(bin);
-            _logger.LogInformation("Successfully created bin with ID: {BinId}", created.Id);
-            return CreatedAtAction(nameof(Get), new { id = created.Id.ToString() }, created);
+            var created = await binService.CreateAsync(bin);
+            logger.LogInformation("Successfully created bin with ID: {BinId}", created.Id);
+            return CreatedAtAction(nameof(GetByIdAsync), new
+            {
+                id = created.Id.ToString()
+            }, created);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while creating a new bin");
+            logger.LogError(ex, "Error occurred while creating a new bin");
             return Problem(detail: ex.Message);
         }
     }
 
     [HttpPost("{id}/telemetry")]
-    public async Task<IActionResult> PostTelemetry(string id, [FromBody] BinTelemetry telemetry)
+    public async Task<IActionResult> PostTelemetryAsync(string id, [FromBody] BinTelemetry telemetry)
     {
-        _logger.LogInformation("Received telemetry update for Bin: {BinId}. FillLevel: {Fill}%", id, telemetry.FillLevel);
+        logger.LogInformation("Received telemetry update for Bin: {BinId}. FillLevel: {Fill}%", id, telemetry.FillLevel);
+
         try
         {
             telemetry.LastUpdated = telemetry.LastUpdated == default ? DateTime.UtcNow : telemetry.LastUpdated;
 
-            await _binService.UpdateTelemetryAsync(id, telemetry);
-            await _binService.UpdateTelemetryHistoryAsync(id, telemetry);
+            await binService.UpdateTelemetryAsync(id, telemetry);
+            await binService.UpdateTelemetryHistoryAsync(id, telemetry);
 
 
             if (telemetry.IsSmokeDetected)
             {
-                _logger.LogCritical("SMOKE DETECTED in Bin: {BinId}!", id);
-                await _alertService.CreateAsync(new Alert
+                logger.LogCritical("SMOKE DETECTED in Bin: {BinId}!", id);
+                await alertService.CreateAsync(new Alert
                 {
                     BinId = id,
                     Type = AlertType.Smoke,
@@ -94,8 +92,8 @@ public class BinsController : ControllerBase
 
             if (telemetry.FillLevel >= 90)
             {
-                _logger.LogWarning("Bin {BinId} is almost full: {Level}%", id, telemetry.FillLevel);
-                await _alertService.CreateAsync(new Alert
+                logger.LogWarning("Bin {BinId} is almost full: {Level}%", id, telemetry.FillLevel);
+                await alertService.CreateAsync(new Alert
                 {
                     BinId = id,
                     Type = AlertType.Fullness,
@@ -108,20 +106,20 @@ public class BinsController : ControllerBase
         }
         catch (KeyNotFoundException)
         {
-            _logger.LogWarning("Attempted to update telemetry for non-existent Bin: {BinId}", id);
+            logger.LogWarning("Attempted to update telemetry for non-existent Bin: {BinId}", id);
             return NotFound();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to update telemetry for Bin: {BinId}", id);
+            logger.LogError(ex, "Failed to update telemetry for Bin: {BinId}", id);
             return Problem(detail: ex.Message);
         }
     }
 
     [HttpPost("seed/{count}")]
-    public async Task<IActionResult> SeedBins(int count = 10)
+    public async Task<IActionResult> SeedBinsAsync(int count = 10)
     {
-        _logger.LogInformation("Starting seed operation for {Count} bins in Almaty", count);
+        logger.LogInformation("Starting seed operation for {Count} bins in Almaty", count);
 
         var telemetryFaker = new Faker<BinTelemetry>()
             .RuleFor(t => t.FillLevel, f => f.Random.Int(0, 100))
@@ -134,8 +132,7 @@ public class BinsController : ControllerBase
             .RuleFor(b => b.Status, f => f.PickRandom<BinStatus>())
             .RuleFor(b => b.Location, f => new GeoPoint(new double[]
             {
-                f.Address.Longitude(76.80, 77.00),
-                f.Address.Latitude(43.20, 43.30)
+                f.Address.Longitude(76.80, 77.00), f.Address.Latitude(43.20, 43.30)
             }))
             .RuleFor(b => b.Telemetry, f => telemetryFaker.Generate())
             .RuleFor(b => b.TelemetryHistory, f => telemetryFaker.Generate(f.Random.Int(1, 5)).ToArray())
@@ -145,13 +142,17 @@ public class BinsController : ControllerBase
         var fakeBins = binFaker.Generate(count);
 
         int successCount = 0;
+
         foreach (var bin in fakeBins)
         {
-            await _binService.CreateAsync(bin);
+            await binService.CreateAsync(bin);
             successCount++;
         }
 
-        _logger.LogInformation("Seed completed. Created {Success} out of {Total} bins", successCount, count);
-        return Ok(new { message = $"Successfully seeded {count} bins in Almaty region" });
+        logger.LogInformation("Seed completed. Created {Success} out of {Total} bins", successCount, count);
+        return Ok(new
+        {
+            message = $"Successfully seeded {count} bins in Almaty region"
+        });
     }
 }
