@@ -13,18 +13,18 @@ public class ShiftLogService(
     ILogger<ShiftLogService> logger)
     : IShiftLogService
 {
-    public async Task<List<ShiftLog>> GetAllAsync()
+    public async Task<List<ShiftLog>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Fetching all shift logs from database");
-        var logs = await repo.GetAllAsync();
+        var logs = await repo.GetAllAsync(cancellationToken);
         logger.LogInformation("Successfully retrieved {Count} shift logs", logs.Count);
         return logs;
     }
 
-    public async Task<ShiftLog?> GetByIdAsync(string id)
+    public async Task<ShiftLog?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Searching for shift log with ID: {Id}", id);
-        var log = await repo.FindById(id);
+        var log = await repo.FindById(id, cancellationToken);
 
         if (log == null)
             logger.LogWarning("Shift log with ID: {Id} was not found", id);
@@ -34,11 +34,11 @@ public class ShiftLogService(
         return log;
     }
 
-    public async Task<ShiftLog> StartShiftAsync(string userId)
+    public async Task<ShiftLog> StartShiftAsync(string userId, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Attempting to start a new shift for User: {UserId}", userId);
 
-        var user = await userRepo.FindById(userId);
+        var user = await userRepo.FindById(userId, cancellationToken);
 
         if (user == null)
         {
@@ -58,17 +58,17 @@ public class ShiftLogService(
             UpdatedAt = DateTime.UtcNow
         };
 
-        repo.InsertOne(shift);
+        repo.InsertOne(shift, cancellationToken);
         logger.LogInformation("New shift started and saved. ShiftId: {ShiftId} for User: {UserId}", shift.Id, userId);
 
         return shift;
     }
 
-    public async Task EndShiftAsync(string shiftId, DateTime endedAt, IEnumerable<string> cleanedBinIds, double distanceKm, string? route = null)
+    public async Task EndShiftAsync(string shiftId, DateTime endedAt, IEnumerable<string> cleanedBinIds, double distanceKm, string? route = null,  CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Attempting to end shift: {ShiftId}", shiftId);
 
-        var shift = await repo.FindById(shiftId);
+        var shift = await repo.FindById(shiftId, cancellationToken);
 
         if (shift == null)
         {
@@ -81,7 +81,7 @@ public class ShiftLogService(
 
         foreach (var binId in cleanedBinIds)
         {
-            var bin = await binRepo.FindById(binId);
+            var bin = await binRepo.FindById(binId, cancellationToken);
 
             if (bin != null)
             {
@@ -100,16 +100,16 @@ public class ShiftLogService(
         shift.Route = route ?? shift.Route;
         shift.UpdatedAt = DateTime.UtcNow;
 
-        repo.ReplaceOne(shift);
+        repo.ReplaceOne(shift, cancellationToken);
         logger.LogInformation("Shift {ShiftId} ended successfully. Bins cleaned: {Count}. Distance: {Distance} km",
                               shiftId, foundBinsCount, distanceKm);
     }
 
-    public async Task DeleteAsync(string id)
+    public async Task DeleteAsync(string id,  CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Request to delete shift log: {Id}", id);
 
-        var existing = await repo.FindById(id);
+        var existing = await repo.FindById(id, cancellationToken);
 
         if (existing == null)
         {
@@ -117,7 +117,7 @@ public class ShiftLogService(
             throw new KeyNotFoundException($"ShiftLog '{id}' not found.");
         }
 
-        repo.DeleteById(id);
+        repo.DeleteById(id, cancellationToken);
         logger.LogInformation("Shift log {Id} deleted successfully", id);
     }
 }
