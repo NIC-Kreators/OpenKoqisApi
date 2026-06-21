@@ -9,33 +9,33 @@ namespace OpenKoqis.Api.Controllers;
 public class AlertsController(IAlertService alertService, ILogger<AlertsController> logger) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<Alert>>> GetAllAsync()
+    public async Task<ActionResult<List<Alert>>> GetAllAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Request received: GetAll alerts");
 
-        var alerts = await alertService.GetAllAsync();
+        var alerts = await alertService.GetAllAsync(cancellationToken);
 
         logger.LogInformation("Returning {Count} alerts", alerts.Count);
         return Ok(alerts);
     }
 
     [HttpGet("active")]
-    public async Task<ActionResult<List<Alert>>> GetActiveAsync()
+    public async Task<ActionResult<List<Alert>>> GetActiveAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Request received: GetActive alerts");
 
-        var alerts = await alertService.GetActiveAlertsAsync();
+        var alerts = await alertService.GetActiveAlertsAsync(cancellationToken);
 
         logger.LogInformation("Found {Count} active alerts", alerts.Count);
         return Ok(alerts);
     }
 
     [HttpGet("bin/{binId}")]
-    public async Task<ActionResult<List<Alert>>> GetByBinAsync(string binId)
+    public async Task<ActionResult<List<Alert>>> GetByBinAsync(string binId, CancellationToken cancellationToken)
     {
         logger.LogInformation("Request received: GetByBin for BinId: {BinId}", binId);
 
-        var alerts = await alertService.GetByBinIdAsync(binId);
+        var alerts = await alertService.GetByBinIdAsync(binId, cancellationToken);
 
         if (alerts.Count == 0)
         {
@@ -48,13 +48,13 @@ public class AlertsController(IAlertService alertService, ILogger<AlertsControll
     }
 
     [HttpPatch("{id}/resolve")]
-    public async Task<IActionResult> ResolveAsync(string id)
+    public async Task<IActionResult> ResolveAsync(string id, CancellationToken cancellationToken)
     {
         logger.LogInformation("Attempting to resolve alert with ID: {AlertId}", id);
 
         try
         {
-            await alertService.ResolveAlertAsync(id);
+            await alertService.ResolveAlertAsync(id, cancellationToken);
             logger.LogInformation("Alert {AlertId} successfully resolved", id);
             return NoContent();
         }
@@ -71,13 +71,13 @@ public class AlertsController(IAlertService alertService, ILogger<AlertsControll
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAsync(string id)
+    public async Task<IActionResult> DeleteAsync(string id, CancellationToken cancellationToken)
     {
         logger.LogInformation("Request received: Delete alert with ID: {AlertId}", id);
 
         try
         {
-            await alertService.DeleteAsync(id);
+            await alertService.DeleteAsync(id, cancellationToken);
             logger.LogInformation("Alert {AlertId} deleted successfully", id);
             return NoContent();
         }
