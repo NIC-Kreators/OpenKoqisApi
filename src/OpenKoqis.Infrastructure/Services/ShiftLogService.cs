@@ -64,7 +64,7 @@ public class ShiftLogService(
         return shift;
     }
 
-    public async Task EndShiftAsync(string shiftId, DateTime endedAt, IEnumerable<string> cleanedBinIds, double distanceKm, string? route = null,  CancellationToken cancellationToken = default)
+    public async Task EndShiftAsync(string shiftId, DateTime endedAt, IEnumerable<string> cleanedBinIds, double distanceKm, string? route = null, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Attempting to end shift: {ShiftId}", shiftId);
 
@@ -105,7 +105,7 @@ public class ShiftLogService(
                               shiftId, foundBinsCount, distanceKm);
     }
 
-    public async Task DeleteAsync(string id,  CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Request to delete shift log: {Id}", id);
 

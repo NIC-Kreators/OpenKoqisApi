@@ -92,7 +92,7 @@ public class UsersController(IUserService userService, ILogger<UsersController> 
 
         try
         {
-            var tokenPair = await userService.LoginAsync(loginDto.Nickname, loginDto.Password,  cancellationToken);
+            var tokenPair = await userService.LoginAsync(loginDto.Nickname, loginDto.Password, cancellationToken);
             logger.LogInformation("User {Nickname} logged in successfully", loginDto.Nickname);
             return Ok(tokenPair);
         }

@@ -42,7 +42,7 @@ public class UserService(
         user.CreatedAt = DateTime.UtcNow;
         user.UpdatedAt = user.CreatedAt;
 
-        repository.InsertOne(user,  cancellationToken);
+        repository.InsertOne(user, cancellationToken);
         logger.LogInformation("User {Nickname} inserted into database", user.Nickname);
 
         return user;
@@ -126,7 +126,7 @@ public class UserService(
         logger.LogInformation("Login attempt for Nickname: {Nickname}", nickname);
 
         Expression<Func<User, bool>> filter = u => u.Nickname == nickname;
-        var user = await repository.FindOne(filter,  cancellationToken);
+        var user = await repository.FindOne(filter, cancellationToken);
 
         if (user == null)
         {

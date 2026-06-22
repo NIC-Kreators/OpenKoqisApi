@@ -35,7 +35,7 @@ public class BinService(IRepository<Bin> repository, ILogger<BinService> logger)
         bin.CreatedAt = DateTime.UtcNow;
         bin.UpdatedAt = bin.CreatedAt;
 
-        repository.InsertOne(bin);
+        repository.InsertOne(bin, cancellationToken);
         logger.LogInformation("Bin created successfully with ID: {BinId}", bin.Id);
 
         return bin;
@@ -57,7 +57,7 @@ public class BinService(IRepository<Bin> repository, ILogger<BinService> logger)
         bin.CreatedAt = existing.CreatedAt;
         bin.UpdatedAt = DateTime.UtcNow;
 
-        repository.ReplaceOne(bin);
+        await repository.ReplaceOneAsync(bin, cancellationToken);
         logger.LogInformation("Bin {BinId} updated successfully", id);
     }
 
@@ -73,7 +73,7 @@ public class BinService(IRepository<Bin> repository, ILogger<BinService> logger)
             throw new KeyNotFoundException($"Bin '{id}' not found.");
         }
 
-        repository.DeleteById(id);
+        repository.DeleteById(id, cancellationToken);
         logger.LogInformation("Bin {BinId} deleted from database", id);
     }
 
@@ -93,7 +93,7 @@ public class BinService(IRepository<Bin> repository, ILogger<BinService> logger)
         existing.Telemetry = telemetry;
         existing.UpdatedAt = DateTime.UtcNow;
 
-        repository.ReplaceOne(existing);
+        await repository.ReplaceOneAsync(existing, cancellationToken);
         logger.LogInformation("Current telemetry for bin {BinId} updated. Fill level: {FillLevel}%", binId, telemetry.FillLevel);
     }
 
@@ -114,10 +114,10 @@ public class BinService(IRepository<Bin> repository, ILogger<BinService> logger)
         var historyList = existing.TelemetryHistory?.ToList() ?? [];
         historyList.Add(telemetry);
 
-        existing.TelemetryHistory = [..historyList];
+        existing.TelemetryHistory = [.. historyList];
         existing.UpdatedAt = DateTime.UtcNow;
 
-        repository.ReplaceOne(existing);
+        await repository.ReplaceOneAsync(existing, cancellationToken);
         logger.LogInformation("History for bin {BinId} updated. Total records: {Count}", binId, existing.TelemetryHistory.Length);
     }
 }

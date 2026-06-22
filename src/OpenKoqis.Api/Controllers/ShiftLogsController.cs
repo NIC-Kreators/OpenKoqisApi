@@ -24,7 +24,7 @@ public class ShiftLogsController(IShiftLogService shiftLogService, ILogger<Shift
     {
         logger.LogInformation("Request received: Get shift log with ID: {Id}", id);
 
-        var shift = await shiftLogService.GetByIdAsync(id,cancellationToken);
+        var shift = await shiftLogService.GetByIdAsync(id, cancellationToken);
 
         if (shift == null)
         {

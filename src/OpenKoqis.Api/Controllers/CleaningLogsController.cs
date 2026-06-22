@@ -62,7 +62,7 @@ public class CleaningLogsController(
 
         try
         {
-            await cleaningLogService.DeleteAsync(id,  cancellationToken);
+            await cleaningLogService.DeleteAsync(id, cancellationToken);
             logger.LogInformation("Deleted cleaning log {LogId} successfully", id);
             return NoContent();
         }
