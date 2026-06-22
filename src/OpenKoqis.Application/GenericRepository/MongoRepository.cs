@@ -43,21 +43,10 @@ public class MongoRepository<TDocument> : IRepository<TDocument> where TDocument
         _collection.InsertMany(documents, cancellationToken: cancellationToken);
     }
 
-    public async Task<TDocument?> FindById(string id)
-    {
-        var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, id);
-        return await _collection.Find(filter).FirstOrDefaultAsync();
-    }
-
     public async Task<TDocument?> FindById(string id, CancellationToken cancellationToken)
     {
         var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, id);
         return await _collection.Find(filter).FirstOrDefaultAsync(cancellationToken);
-    }
-
-    public async Task<TDocument?> FindOne(Expression<Func<TDocument, bool>> filterExpression)
-    {
-        return await _collection.Find(filterExpression).FirstOrDefaultAsync();
     }
 
     public async Task<TDocument?> FindOne(Expression<Func<TDocument, bool>> filterExpression, CancellationToken cancellationToken)
@@ -98,19 +87,9 @@ public class MongoRepository<TDocument> : IRepository<TDocument> where TDocument
         throw new NotImplementedException();
     }
 
-    public async Task<List<TDocument>> FindAsync(FilterDefinition<TDocument> filter)
-    {
-        return await _collection.Find(filter).ToListAsync();
-    }
-
     public async Task<List<TDocument>> FindAsync(FilterDefinition<TDocument> filter, CancellationToken cancellationToken)
     {
         return await _collection.Find(filter).ToListAsync(cancellationToken);
-    }
-
-    public async Task<List<TDocument>> GetAllAsync()
-    {
-        return await _collection.Find(_ => true).ToListAsync();
     }
 
     public async Task<List<TDocument>> GetAllAsync(CancellationToken cancellationToken)

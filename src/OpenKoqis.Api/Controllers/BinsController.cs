@@ -74,14 +74,12 @@ public class BinsController(
         {
             telemetry.LastUpdated = telemetry.LastUpdated == default ? DateTime.UtcNow : telemetry.LastUpdated;
 
-            // Передаем токен в оба метода сервиса баков
             await binService.UpdateTelemetryAsync(id, telemetry, cancellationToken);
             await binService.UpdateTelemetryHistoryAsync(id, telemetry, cancellationToken);
 
             if (telemetry.IsSmokeDetected)
             {
                 logger.LogCritical("SMOKE DETECTED in Bin: {BinId}!", id);
-                // Сюда тоже передаем токен
                 await alertService.CreateAsync(
                     new Alert
                     {
@@ -95,7 +93,6 @@ public class BinsController(
             if (telemetry.FillLevel >= 90)
             {
                 logger.LogWarning("Bin {BinId} is almost full: {Level}%", id, telemetry.FillLevel);
-                // И сюда передаем токен
                 await alertService.CreateAsync(
                     new Alert
                     {
@@ -110,9 +107,8 @@ public class BinsController(
         }
         catch (OperationCanceledException)
         {
-            // ХОРОШАЯ ПРАКТИКА: Логируем, что запрос был отменен пользователем
             logger.LogWarning("Telemetry update operation for Bin {BinId} was canceled by the client.", id);
-            throw; // Пробрасываем выше, фреймворк ASP.NET Core сам вернет статус 499
+            throw;
         }
         catch (KeyNotFoundException)
         {
