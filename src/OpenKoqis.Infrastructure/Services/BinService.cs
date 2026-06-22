@@ -35,7 +35,6 @@ public class BinService(IRepository<Bin> repository, ILogger<BinService> logger)
         bin.CreatedAt = DateTime.UtcNow;
         bin.UpdatedAt = bin.CreatedAt;
 
-        // Метод синхронный, токен не нужен
         repository.InsertOne(bin);
         logger.LogInformation("Bin created successfully with ID: {BinId}", bin.Id);
 

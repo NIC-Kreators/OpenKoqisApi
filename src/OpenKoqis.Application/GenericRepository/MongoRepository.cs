@@ -33,13 +33,11 @@ public class MongoRepository<TDocument> : IRepository<TDocument> where TDocument
         return _collection.AsQueryable();
     }
 
-    // Реализация InsertOne(doc, token)
     public void InsertOne(TDocument document, CancellationToken cancellationToken)
     {
         _collection.InsertOne(document, cancellationToken: cancellationToken);
     }
 
-    // Реализация InsertMany(docs, token)
     public void InsertMany(ICollection<TDocument> documents, CancellationToken cancellationToken)
     {
         _collection.InsertMany(documents, cancellationToken: cancellationToken);
@@ -67,40 +65,34 @@ public class MongoRepository<TDocument> : IRepository<TDocument> where TDocument
         return await _collection.Find(filterExpression).FirstOrDefaultAsync(cancellationToken);
     }
 
-    // Реализация ReplaceOne(doc, token)
     public void ReplaceOne(TDocument document, CancellationToken cancellationToken)
     {
         var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, document.Id);
         _collection.ReplaceOne(filter, document, cancellationToken: cancellationToken);
     }
 
-    // Реализация ReplaceOneAsync(doc, token)
     public async Task ReplaceOneAsync(TDocument document, CancellationToken cancellationToken)
     {
         var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, document.Id);
         await _collection.ReplaceOneAsync(filter, document, cancellationToken: cancellationToken);
     }
 
-    // Реализация DeleteById(id, token)
     public void DeleteById(string id, CancellationToken cancellationToken)
     {
         var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, id);
         _collection.DeleteOne(filter, cancellationToken);
     }
 
-    // Реализация DeleteOne(filter, token)
     public void DeleteOne(Expression<Func<TDocument, bool>> filterExpression, CancellationToken cancellationToken)
     {
         _collection.DeleteOne(filterExpression, cancellationToken);
     }
 
-    // Реализация DeleteMany(filter, token)
     public void DeleteMany(Expression<Func<TDocument, bool>> filterExpression, CancellationToken cancellationToken)
     {
         _collection.DeleteMany(filterExpression, cancellationToken);
     }
 
-    // Реализация GetByIdAsync(id, token)
     public async Task GetByIdAsync(string id, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();

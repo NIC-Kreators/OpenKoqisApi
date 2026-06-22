@@ -11,9 +11,6 @@ public interface IUserService
     Task UpdateAsync(string id, User user, CancellationToken cancellationToken = default);
     Task DeleteAsync(string id, CancellationToken cancellationToken = default);
 
-    // New user registry
     Task<TokenPair> RegisterAsync(UserRegistrationDto registrationDto, CancellationToken cancellationToken = default);
-
-    // User login
     Task<TokenPair> LoginAsync(string email, string password, CancellationToken cancellationToken = default);
 }
