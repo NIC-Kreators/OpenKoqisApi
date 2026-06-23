@@ -9,22 +9,22 @@ namespace OpenKoqis.Api.Controllers;
 public class ShiftLogsController(IShiftLogService shiftLogService, ILogger<ShiftLogsController> logger) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<ShiftLog>>> GetAsync()
+    public async Task<ActionResult<List<ShiftLog>>> GetAsync(CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Request received: Get all shift logs");
 
-        var shifts = await shiftLogService.GetAllAsync();
+        var shifts = await shiftLogService.GetAllAsync(cancellationToken);
 
         logger.LogInformation("Successfully retrieved {Count} shifts", shifts.Count);
         return Ok(shifts);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ShiftLog>> GetByIdAsync(string id)
+    public async Task<ActionResult<ShiftLog>> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Request received: Get shift log with ID: {Id}", id);
 
-        var shift = await shiftLogService.GetByIdAsync(id);
+        var shift = await shiftLogService.GetByIdAsync(id, cancellationToken);
 
         if (shift == null)
         {
@@ -42,13 +42,13 @@ public class ShiftLogsController(IShiftLogService shiftLogService, ILogger<Shift
     }
 
     [HttpPost("start")]
-    public async Task<ActionResult<ShiftLog>> StartAsync([FromBody] StartShiftRequest req)
+    public async Task<ActionResult<ShiftLog>> StartAsync([FromBody] StartShiftRequest req, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Attempting to start a new shift for User: {UserId}", req.UserId);
 
         try
         {
-            var created = await shiftLogService.StartShiftAsync(req.UserId);
+            var created = await shiftLogService.StartShiftAsync(req.UserId, cancellationToken);
             logger.LogInformation("Shift started successfully. Assigned ID: {ShiftId}", created.Id);
             return CreatedAtAction(nameof(GetByIdAsync), new
             {
@@ -71,7 +71,7 @@ public class ShiftLogsController(IShiftLogService shiftLogService, ILogger<Shift
     }
 
     [HttpPost("{id}/end")]
-    public async Task<IActionResult> EndAsync(string id, [FromBody] EndShiftRequest req)
+    public async Task<IActionResult> EndAsync(string id, [FromBody] EndShiftRequest req, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Attempting to end shift ID: {Id}. Distance: {Distance}km", id, req.DistanceKm);
 
@@ -82,7 +82,8 @@ public class ShiftLogsController(IShiftLogService shiftLogService, ILogger<Shift
                 req.EndedAt ?? default,
                 req.CleanedBinIds ?? Enumerable.Empty<string>(),
                 req.DistanceKm,
-                req.Route);
+                req.Route,
+                cancellationToken);
 
             logger.LogInformation("Shift ID: {Id} ended successfully", id);
             return NoContent();
@@ -95,11 +96,11 @@ public class ShiftLogsController(IShiftLogService shiftLogService, ILogger<Shift
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAsync(string id)
+    public async Task<IActionResult> DeleteAsync(string id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Request to delete shift log ID: {Id}", id);
 
-        await shiftLogService.DeleteAsync(id);
+        await shiftLogService.DeleteAsync(id, cancellationToken);
 
         logger.LogInformation("Shift log ID: {Id} deleted (if it existed)", id);
         return NoContent();

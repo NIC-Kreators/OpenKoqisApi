@@ -11,18 +11,18 @@ public class CleaningLogService(
     IRepository<Bin> binRepo,
     ILogger<CleaningLogService> logger) : ICleaningLogService
 {
-    public async Task<List<CleaningLog>> GetAllAsync()
+    public async Task<List<CleaningLog>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Fetching all cleaning logs from database");
-        var logs = await repo.GetAllAsync();
+        var logs = await repo.GetAllAsync(cancellationToken);
         logger.LogInformation("Successfully retrieved {Count} logs", logs.Count);
         return logs;
     }
 
-    public async Task<CleaningLog?> GetByIdAsync(string id)
+    public async Task<CleaningLog?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Searching for cleaning log with ID: {Id}", id);
-        var log = await repo.FindById(id);
+        var log = await repo.FindById(id, cancellationToken);
 
         if (log == null)
             logger.LogWarning("Cleaning log with ID: {Id} was not found", id);
@@ -32,23 +32,23 @@ public class CleaningLogService(
         return log;
     }
 
-    public async Task<CleaningLog> CreateAsync(CleaningLog log)
+    public async Task<CleaningLog> CreateAsync(CleaningLog log, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Creating new manual cleaning log entry");
         log.CreatedAt = DateTime.UtcNow;
         log.UpdatedAt = log.CreatedAt;
 
-        repo.InsertOne(log);
+        repo.InsertOne(log, cancellationToken);
         logger.LogInformation("Cleaning log inserted with generated ID: {Id}", log.Id);
 
         return log;
     }
 
-    public async Task DeleteAsync(string id)
+    public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Attempting to delete cleaning log: {Id}", id);
 
-        var existing = await repo.FindById(id);
+        var existing = await repo.FindById(id, cancellationToken);
 
         if (existing == null)
         {
@@ -60,11 +60,11 @@ public class CleaningLogService(
         logger.LogInformation("Cleaning log {Id} successfully deleted", id);
     }
 
-    public async Task<CleaningLog> LogCleaningAsync(string binId, string userId, int removedKg, string? notes = null)
+    public async Task<CleaningLog> LogCleaningAsync(string binId, string userId, int removedKg, string? notes = null, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Starting LogCleaning process for Bin: {BinId} by User: {UserId}", binId, userId);
 
-        var bin = await binRepo.FindById(binId);
+        var bin = await binRepo.FindById(binId, cancellationToken);
 
         if (bin == null)
         {
@@ -85,12 +85,12 @@ public class CleaningLogService(
         };
 
         logger.LogDebug("Inserting cleaning log into database...");
-        repo.InsertOne(cleaning);
+        repo.InsertOne(cleaning, cancellationToken);
 
         logger.LogInformation("Updating Bin {Id} status to Active after cleaning", binId);
         bin.Status = BinStatus.Active;
         bin.UpdatedAt = DateTime.UtcNow;
-        binRepo.ReplaceOne(bin);
+        binRepo.ReplaceOne(bin, cancellationToken);
 
         logger.LogInformation("Cleaning process completed. Recorded {Weight}kg removed", removedKg);
 

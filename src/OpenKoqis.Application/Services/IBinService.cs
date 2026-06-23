@@ -4,12 +4,12 @@ namespace OpenKoqis.Application.Services;
 
 public interface IBinService
 {
-    Task<List<Bin>> GetAllAsync();
-    Task<Bin?> GetByIdAsync(string id);
-    Task<Bin> CreateAsync(Bin bin);
-    Task UpdateAsync(string id, Bin bin);
-    Task DeleteAsync(string id);
-    Task UpdateTelemetryAsync(string binId, BinTelemetry telemetry);
-    Task UpdateTelemetryHistoryAsync(string binId, BinTelemetry telemetry);
+    Task<List<Bin>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<Bin?> GetByIdAsync(string id, CancellationToken cancellationToken = default);
+    Task<Bin> CreateAsync(Bin bin, CancellationToken cancellationToken = default);
+    Task UpdateAsync(string id, Bin bin, CancellationToken cancellationToken = default);
+    Task DeleteAsync(string id, CancellationToken cancellationToken = default);
+    Task UpdateTelemetryAsync(string binId, BinTelemetry telemetry, CancellationToken cancellationToken = default);
+    Task UpdateTelemetryHistoryAsync(string binId, BinTelemetry telemetry, CancellationToken cancellationToken = default);
 
 }

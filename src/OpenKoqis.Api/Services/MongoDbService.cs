@@ -1,4 +1,4 @@
-﻿using MongoDB.Driver;
+using MongoDB.Driver;
 using OpenKoqis.Domain.Models;
 
 namespace OpenKoqis.Api.Services;

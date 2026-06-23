@@ -14,194 +14,86 @@ public class MongoRepository<TDocument> : IRepository<TDocument> where TDocument
     {
         var database = new MongoClient(settings.ConnectionString).GetDatabase(settings.DatabaseName);
         _collection = database.GetCollection<TDocument>(MongoRepository<TDocument>.GetCollectionName(typeof(TDocument)));
-
         _settings = settings;
     }
 
     private static string GetCollectionName(Type documentType)
     {
-        try
+        if (documentType.GetCustomAttributes(typeof(MongoCollectionAttribute), true)
+                .FirstOrDefault() is MongoCollectionAttribute mongoCollectionAttribute)
         {
-            if (documentType.GetCustomAttributes(typeof(MongoCollectionAttribute), true)
-                    .FirstOrDefault() is MongoCollectionAttribute mongoCollectionAttribute)
-            {
-                return mongoCollectionAttribute.CollectionName;
-            }
-            else
-            {
-                // If attribute isn't set , return default collection name based on name like TDocument
-                return typeof(TDocument).Name;
-            }
+            return mongoCollectionAttribute.CollectionName;
         }
-        catch (Exception)
-        {
-            throw;
-        }
+
+        return typeof(TDocument).Name;
     }
 
     public IQueryable<TDocument> AsQueryable()
     {
-        try
-        {
-            return _collection.AsQueryable();
-        }
-        catch (Exception)
-        {
-
-            throw;
-        }
+        return _collection.AsQueryable();
     }
 
-    public async void InsertOne(TDocument document)
+    public void InsertOne(TDocument document, CancellationToken cancellationToken)
     {
-
-        try
-        {
-            _collection.InsertOne(document);
-        }
-        catch (Exception)
-        {
-
-            throw;
-        }
+        _collection.InsertOne(document, cancellationToken: cancellationToken);
     }
 
-    public async void InsertMany(ICollection<TDocument> documents)
+    public void InsertMany(ICollection<TDocument> documents, CancellationToken cancellationToken)
     {
-        try
-        {
-            _collection.InsertMany(documents);
-        }
-        catch (Exception)
-        {
-
-            throw;
-        }
+        _collection.InsertMany(documents, cancellationToken: cancellationToken);
     }
 
-    public async Task<TDocument?> FindById(string id)
+    public async Task<TDocument?> FindById(string id, CancellationToken cancellationToken)
     {
-        try
-        {
-            var objectId = ObjectId.Parse(id);
-            var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, id);
-            return await _collection.Find(filter).FirstOrDefaultAsync();
-        }
-        catch (Exception)
-        {
-
-            throw;
-        }
+        var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, id);
+        return await _collection.Find(filter).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<TDocument?> FindOne(Expression<Func<TDocument, bool>> filterExpression)
+    public async Task<TDocument?> FindOne(Expression<Func<TDocument, bool>> filterExpression, CancellationToken cancellationToken)
     {
-        try
-        {
-            return await _collection.Find(filterExpression).FirstOrDefaultAsync();
-        }
-        catch (Exception)
-        {
-
-            throw;
-        }
+        return await _collection.Find(filterExpression).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public void ReplaceOne(TDocument document)
+    public void ReplaceOne(TDocument document, CancellationToken cancellationToken)
     {
-        try
-        {
-            var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, document.Id);
-            _collection.ReplaceOne(filter, document);
-        }
-        catch (Exception)
-        {
-
-            throw;
-        }
+        var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, document.Id);
+        _collection.ReplaceOne(filter, document, cancellationToken: cancellationToken);
     }
 
-    public async void DeleteById(string id)
+    public async Task ReplaceOneAsync(TDocument document, CancellationToken cancellationToken)
     {
-        try
-        {
-            var objectId = ObjectId.Parse(id);
-            var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, id);
-            await _collection.DeleteOneAsync(filter);
-        }
-        catch (Exception)
-        {
-
-            throw;
-        }
+        var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, document.Id);
+        await _collection.ReplaceOneAsync(filter, document, cancellationToken: cancellationToken);
     }
 
-    public async void DeleteOne(Expression<Func<TDocument, bool>> filterExpression)
+    public void DeleteById(string id, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _collection.DeleteOneAsync(filterExpression);
-        }
-        catch (Exception)
-        {
-
-            throw;
-        }
+        var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, id);
+        _collection.DeleteOne(filter, cancellationToken);
     }
 
-    public async void DeleteMany(Expression<Func<TDocument, bool>> filterExpression)
+    public void DeleteOne(Expression<Func<TDocument, bool>> filterExpression, CancellationToken cancellationToken)
     {
-        try
-        {
-            _collection.DeleteMany(filterExpression);
-        }
-        catch (Exception)
-        {
-
-            throw;
-        }
+        _collection.DeleteOne(filterExpression, cancellationToken);
     }
 
-    public async Task GetByIdAsync(string id)
+    public void DeleteMany(Expression<Func<TDocument, bool>> filterExpression, CancellationToken cancellationToken)
+    {
+        _collection.DeleteMany(filterExpression, cancellationToken);
+    }
+
+    public async Task GetByIdAsync(string id, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<List<TDocument>> FindManyByAttributeAsync(string attributeName, object attributeValue)
+    public async Task<List<TDocument>> FindAsync(FilterDefinition<TDocument> filter, CancellationToken cancellationToken)
     {
-        try
-        {
-            var filter = Builders<TDocument>.Filter.Eq(attributeName, attributeValue);
-            var result = await _collection.Find(filter).ToListAsync();
-            return result;
-        }
-        catch (Exception)
-        {
-            throw;
-        }
+        return await _collection.Find(filter).ToListAsync(cancellationToken);
     }
 
-    public async Task<List<TDocument>> FindAsync(FilterDefinition<TDocument> filter)
+    public async Task<List<TDocument>> GetAllAsync(CancellationToken cancellationToken)
     {
-        try
-        {
-            return await _collection.Find(filter).ToListAsync();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error while finding documents: {ex.Message}", ex);
-        }
-    }
-
-    public async Task<List<TDocument>> GetAllAsync()
-    {
-        try
-        {
-            return await _collection.Find(_ => true).ToListAsync();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error while getting all documents: {ex.Message}", ex);
-        }
+        return await _collection.Find(_ => true).ToListAsync(cancellationToken);
     }
 }

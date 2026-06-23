@@ -7,18 +7,18 @@ namespace OpenKoqis.Infrastructure.Services;
 
 public class BinService(IRepository<Bin> repository, ILogger<BinService> logger) : IBinService
 {
-    public async Task<List<Bin>> GetAllAsync()
+    public async Task<List<Bin>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Fetching all bins from database");
-        var bins = await repository.GetAllAsync();
+        var bins = await repository.GetAllAsync(cancellationToken);
         logger.LogInformation("Successfully retrieved {Count} bins", bins.Count);
         return bins;
     }
 
-    public async Task<Bin?> GetByIdAsync(string id)
+    public async Task<Bin?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Searching for bin with ID: {BinId}", id);
-        var bin = await repository.FindById(id);
+        var bin = await repository.FindById(id, cancellationToken);
 
         if (bin == null)
             logger.LogWarning("Bin with ID: {BinId} was not found", id);
@@ -28,24 +28,24 @@ public class BinService(IRepository<Bin> repository, ILogger<BinService> logger)
         return bin;
     }
 
-    public async Task<Bin> CreateAsync(Bin bin)
+    public async Task<Bin> CreateAsync(Bin bin, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Creating a new bin of type {BinType}", bin.Type);
 
         bin.CreatedAt = DateTime.UtcNow;
         bin.UpdatedAt = bin.CreatedAt;
 
-        repository.InsertOne(bin);
+        repository.InsertOne(bin, cancellationToken);
         logger.LogInformation("Bin created successfully with ID: {BinId}", bin.Id);
 
         return bin;
     }
 
-    public async Task UpdateAsync(string id, Bin bin)
+    public async Task UpdateAsync(string id, Bin bin, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Attempting to update bin {BinId}", id);
 
-        var existing = await repository.FindById(id);
+        var existing = await repository.FindById(id, cancellationToken);
 
         if (existing == null)
         {
@@ -57,15 +57,15 @@ public class BinService(IRepository<Bin> repository, ILogger<BinService> logger)
         bin.CreatedAt = existing.CreatedAt;
         bin.UpdatedAt = DateTime.UtcNow;
 
-        repository.ReplaceOne(bin);
+        await repository.ReplaceOneAsync(bin, cancellationToken);
         logger.LogInformation("Bin {BinId} updated successfully", id);
     }
 
-    public async Task DeleteAsync(string id)
+    public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Attempting to delete bin {BinId}", id);
 
-        var existing = await repository.FindById(id);
+        var existing = await repository.FindById(id, cancellationToken);
 
         if (existing == null)
         {
@@ -73,15 +73,15 @@ public class BinService(IRepository<Bin> repository, ILogger<BinService> logger)
             throw new KeyNotFoundException($"Bin '{id}' not found.");
         }
 
-        repository.DeleteById(id);
+        repository.DeleteById(id, cancellationToken);
         logger.LogInformation("Bin {BinId} deleted from database", id);
     }
 
-    public async Task UpdateTelemetryAsync(string binId, BinTelemetry telemetry)
+    public async Task UpdateTelemetryAsync(string binId, BinTelemetry telemetry, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Updating current telemetry for bin {BinId}", binId);
 
-        var existing = await repository.FindById(binId);
+        var existing = await repository.FindById(binId, cancellationToken);
 
         if (existing == null)
         {
@@ -93,15 +93,15 @@ public class BinService(IRepository<Bin> repository, ILogger<BinService> logger)
         existing.Telemetry = telemetry;
         existing.UpdatedAt = DateTime.UtcNow;
 
-        repository.ReplaceOne(existing);
+        await repository.ReplaceOneAsync(existing, cancellationToken);
         logger.LogInformation("Current telemetry for bin {BinId} updated. Fill level: {FillLevel}%", binId, telemetry.FillLevel);
     }
 
-    public async Task UpdateTelemetryHistoryAsync(string binId, BinTelemetry telemetry)
+    public async Task UpdateTelemetryHistoryAsync(string binId, BinTelemetry telemetry, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Adding new entry to telemetry history for bin {BinId}", binId);
 
-        var existing = await repository.FindById(binId);
+        var existing = await repository.FindById(binId, cancellationToken);
 
         if (existing == null)
         {
@@ -114,10 +114,10 @@ public class BinService(IRepository<Bin> repository, ILogger<BinService> logger)
         var historyList = existing.TelemetryHistory?.ToList() ?? [];
         historyList.Add(telemetry);
 
-        existing.TelemetryHistory = [..historyList];
+        existing.TelemetryHistory = [.. historyList];
         existing.UpdatedAt = DateTime.UtcNow;
 
-        repository.ReplaceOne(existing);
+        await repository.ReplaceOneAsync(existing, cancellationToken);
         logger.LogInformation("History for bin {BinId} updated. Total records: {Count}", binId, existing.TelemetryHistory.Length);
     }
 }

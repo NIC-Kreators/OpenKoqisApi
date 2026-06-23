@@ -11,19 +11,19 @@ public class CleaningLogsController(
     ILogger<CleaningLogsController> logger) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<CleaningLog>>> GetAsync()
+    public async Task<ActionResult<List<CleaningLog>>> GetAsync(CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Fetching all cleaning logs at {Time}", DateTime.UtcNow);
-        var logs = await cleaningLogService.GetAllAsync();
+        var logs = await cleaningLogService.GetAllAsync(cancellationToken);
         logger.LogDebug("Retrieved {Count} logs from database", logs.Count);
         return Ok(logs);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<CleaningLog>> GetByIdAsync(string id)
+    public async Task<ActionResult<CleaningLog>> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Requested cleaning log with ID: {LogId}", id);
-        var log = await cleaningLogService.GetByIdAsync(id);
+        var log = await cleaningLogService.GetByIdAsync(id, cancellationToken);
 
         if (log == null)
         {
@@ -35,13 +35,13 @@ public class CleaningLogsController(
     }
 
     [HttpPost]
-    public async Task<ActionResult<CleaningLog>> PostAsync([FromBody] CleaningLog log)
+    public async Task<ActionResult<CleaningLog>> PostAsync([FromBody] CleaningLog log, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Creating a new manual cleaning log entry");
 
         try
         {
-            var created = await cleaningLogService.CreateAsync(log);
+            var created = await cleaningLogService.CreateAsync(log, cancellationToken);
             logger.LogInformation("Successfully created log with ID: {LogId}", created.Id);
             return CreatedAtAction(nameof(GetByIdAsync), new
             {
@@ -56,13 +56,13 @@ public class CleaningLogsController(
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAsync(string id)
+    public async Task<IActionResult> DeleteAsync(string id, CancellationToken cancellationToken = default)
     {
         logger.LogWarning("Request to DELETE cleaning log: {LogId}", id);
 
         try
         {
-            await cleaningLogService.DeleteAsync(id);
+            await cleaningLogService.DeleteAsync(id, cancellationToken);
             logger.LogInformation("Deleted cleaning log {LogId} successfully", id);
             return NoContent();
         }
@@ -82,13 +82,13 @@ public class CleaningLogsController(
     }
 
     [HttpPost("log")]
-    public async Task<ActionResult<CleaningLog>> LogCleaningAsync([FromBody] LogCleaningRequest req)
+    public async Task<ActionResult<CleaningLog>> LogCleaningAsync([FromBody] LogCleaningRequest req, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Domain Action: Logging cleaning process for Bin: {BinId} by User: {UserId}", req.BinId, req.UserId);
 
         try
         {
-            var created = await cleaningLogService.LogCleaningAsync(req.BinId, req.UserId, req.RemovedKg, req.Notes);
+            var created = await cleaningLogService.LogCleaningAsync(req.BinId, req.UserId, req.RemovedKg, req.Notes, cancellationToken);
             logger.LogInformation("Domain Action Success: Bin {BinId} cleaned, removed {Weight}kg", req.BinId, req.RemovedKg);
             return CreatedAtAction(nameof(GetByIdAsync), new
             {

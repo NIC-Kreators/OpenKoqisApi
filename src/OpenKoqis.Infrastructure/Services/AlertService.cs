@@ -8,36 +8,36 @@ namespace OpenKoqis.Infrastructure.Services;
 
 public class AlertService(IRepository<Alert> repository, ILogger<AlertService> logger) : IAlertService
 {
-    public async Task<List<Alert>> GetAllAsync()
+    public async Task<List<Alert>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Fetching all alerts from the database");
-        var alerts = await repository.GetAllAsync();
+        var alerts = await repository.GetAllAsync(cancellationToken);
         logger.LogInformation("Successfully retrieved {Count} alerts", alerts.Count);
         return alerts;
     }
 
-    public async Task<List<Alert>> GetActiveAlertsAsync()
+    public async Task<List<Alert>> GetActiveAlertsAsync(CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Filtering active (unresolved) alerts");
         var activeAlerts = await repository.AsQueryable()
             .Where(a => !a.IsResolved)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
         logger.LogInformation("Found {Count} active alerts", activeAlerts.Count);
         return activeAlerts;
     }
 
-    public async Task<List<Alert>> GetByBinIdAsync(string binId)
+    public async Task<List<Alert>> GetByBinIdAsync(string binId, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Searching alerts for BinId: {BinId}", binId);
         var alerts = await repository.AsQueryable()
             .Where(a => a.BinId == binId)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
         logger.LogInformation("Retrieved {Count} alerts for BinId: {BinId}", alerts.Count, binId);
 
         return alerts;
     }
 
-    public async Task<Alert> CreateAsync(Alert alert)
+    public async Task<Alert> CreateAsync(Alert alert, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Creating a new alert for BinId: {BinId}, Type: {Type}", alert.BinId, alert.Type);
 
@@ -53,11 +53,11 @@ public class AlertService(IRepository<Alert> repository, ILogger<AlertService> l
         return alert;
     }
 
-    public async Task ResolveAlertAsync(string id)
+    public async Task ResolveAlertAsync(string id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Attempting to resolve alert with ID: {Id}", id);
 
-        var alert = await repository.FindById(id);
+        var alert = await repository.FindById(id, cancellationToken);
 
         if (alert == null)
         {
@@ -72,9 +72,10 @@ public class AlertService(IRepository<Alert> repository, ILogger<AlertService> l
         logger.LogInformation("Alert {Id} status updated to Resolved at {Time}", id, alert.ResolvedAt);
     }
 
-    public async Task DeleteAsync(string id)
+    public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
     {
         logger.LogWarning("Deleting alert with ID: {Id} from database", id);
+
         repository.DeleteById(id);
         logger.LogInformation("Alert {Id} has been deleted", id);
     }
